@@ -146,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let mode = "free";       // "intro" mientras forman el logo, luego "free"
   let holdStart = 0;       // marca de tiempo cuando el logo ya está formado
   let logoTargets = [];    // puntos (normalizados) muestreados del logo
+  let extras = [];         // partículas TEMPORALES para nitidez del logo (se desvanecen)
 
   // Colores de marca
   const NODE = "rgba(10,116,218,0.95)";  // azul
@@ -223,6 +224,16 @@ document.addEventListener("DOMContentLoaded", () => {
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
     }
+    // Partículas temporales del logo (con desvanecido)
+    for (const e of extras) {
+      ctx.globalAlpha = e.alpha;
+      ctx.shadowColor = e.c;
+      ctx.fillStyle = e.c;
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
     ctx.shadowBlur = 0;
   }
 
@@ -236,21 +247,41 @@ document.addEventListener("DOMContentLoaded", () => {
         p.y += (p.ty - p.y) * 0.07;
         if (Math.abs(p.tx - p.x) > 1.3 || Math.abs(p.ty - p.y) > 1.3) allClose = false;
       }
+      for (const e of extras) {
+        e.x += (e.tx - e.x) * 0.07;
+        e.y += (e.ty - e.y) * 0.07;
+        if (Math.abs(e.tx - e.x) > 1.3 || Math.abs(e.ty - e.y) > 1.3) allClose = false;
+      }
       if (allClose) {
         if (!holdStart) {
           holdStart = performance.now();
         } else if (performance.now() - holdStart > 1100) {
-          // Liberar: dispersión suave hacia la red libre
+          // Liberar: dispersión suave hacia la red libre; las extra se desvanecen
           mode = "free";
           for (const p of particles) {
             p.vx = (Math.random() - 0.5) * 0.5;
             p.vy = (Math.random() - 0.5) * 0.5;
+          }
+          for (const e of extras) {
+            e.fade = true;
+            e.vx = (Math.random() - 0.5) * 0.6;
+            e.vy = (Math.random() - 0.5) * 0.6;
           }
         }
       }
       draw();
       raf = requestAnimationFrame(step);
       return;
+    }
+
+    // Desvanecer y retirar las partículas temporales del logo
+    if (extras.length) {
+      for (const e of extras) {
+        e.x += e.vx || 0;
+        e.y += e.vy || 0;
+        e.alpha -= 0.02;
+      }
+      extras = extras.filter((e) => e.alpha > 0.02);
     }
 
     // Fase libre: red interactiva (comportamiento normal)
@@ -329,15 +360,43 @@ document.addEventListener("DOMContentLoaded", () => {
     img.src = "assets/logo.png";
   }
 
-  // Asigna a cada partícula un punto destino dentro del hero
+  // Asigna destinos formando el logo; usa distribución uniforme y partículas extra temporales
   function assignLogoTargets() {
     if (!logoTargets.length) return false;
     const L = Math.min(w, h) * 0.62;
     const cx = w * 0.5, cy = h * 0.46;
-    for (const p of particles) {
-      const pt = logoTargets[(Math.random() * logoTargets.length) | 0];
-      p.tx = cx + (pt[0] - 0.5) * L;
-      p.ty = cy + (pt[1] - 0.34) * L;
+    const map = (pt) => [cx + (pt[0] - 0.5) * L, cy + (pt[1] - 0.34) * L];
+
+    // Baraja los puntos para una cobertura uniforme (Fisher-Yates)
+    const pool = logoTargets.slice();
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = (Math.random() * (i + 1)) | 0;
+      const t = pool[i]; pool[i] = pool[j]; pool[j] = t;
+    }
+
+    // Total de puntos para que la silueta se vea nítida (limitado, son temporales)
+    const T = Math.min(pool.length, Math.max(150, particles.length + 80));
+    const tgt = [];
+    for (let i = 0; i < T; i++) tgt.push(map(pool[((i * pool.length) / T) | 0]));
+
+    // Las partículas permanentes toman los primeros destinos
+    const n = particles.length;
+    for (let k = 0; k < n; k++) {
+      const t = tgt[k % T];
+      particles[k].tx = t[0];
+      particles[k].ty = t[1];
+    }
+
+    // El resto son partículas TEMPORALES (se desvanecen al liberar)
+    extras = [];
+    for (let i = n; i < T; i++) {
+      extras.push({
+        x: Math.random() * w, y: Math.random() * h,
+        tx: tgt[i][0], ty: tgt[i][1],
+        r: 1.3 + Math.random() * 1.4,
+        c: Math.random() > 0.5 ? NODE : NODE2,
+        alpha: 1, fade: false, vx: 0, vy: 0,
+      });
     }
     return true;
   }
@@ -353,6 +412,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (prefersReduced) {
       // Sin animación: dejar las partículas formando el logo de forma estática
       for (const p of particles) { p.x = p.tx; p.y = p.ty; }
+      for (const e of extras) { e.x = e.tx; e.y = e.ty; }
       draw();
     } else {
       mode = "intro";
@@ -379,6 +439,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const wasRunning = running;
       stop();
       mode = "free"; // evita destinos obsoletos tras recrear partículas
+      extras = [];   // descarta partículas temporales del logo
       size();
       draw();
       if (wasRunning) start();
