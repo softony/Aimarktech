@@ -125,6 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* =========================================================
    RED DE PARTÍCULAS DEL HERO (constelación tecnológica)
+   Cubre todo el hero, reacciona al cursor y los nodos brillan.
    Ligera: canvas + requestAnimationFrame, se pausa fuera de vista.
    --------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
@@ -133,18 +134,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const ctx = canvas.getContext("2d");
-  const host = canvas.parentElement;
+  const host = canvas.parentElement; // .hero (cubre toda la sección)
 
   let w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
   let particles = [];
   let raf = null;
   let running = false;
+  const mouse = { x: null, y: null };
 
   // Colores de marca
-  const NODE = "rgba(10,116,218,0.9)";   // azul
-  const NODE2 = "rgba(0,194,255,0.9)";   // cyan
-  const LINK = "10,116,218";             // base para líneas (con alpha variable)
-  const MAX_DIST = 120;                  // distancia máxima para conectar
+  const NODE = "rgba(10,116,218,0.95)";  // azul
+  const NODE2 = "rgba(0,194,255,0.95)";  // cyan
+  const LINK = "10,116,218";             // líneas entre nodos
+  const LINK_M = "0,194,255";            // líneas hacia el cursor
+  const MAX_DIST = 130;                  // conexión entre partículas
+  const MOUSE_DIST = 180;                // conexión e influencia del cursor
 
   function size() {
     w = host.clientWidth;
@@ -154,15 +158,15 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     // Densidad según área (limitada para mantenerlo ligero)
-    const count = Math.max(18, Math.min(46, Math.round((w * h) / 9000)));
+    const count = Math.max(24, Math.min(72, Math.round((w * h) / 11000)));
     particles = [];
     for (let i = 0; i < count; i++) {
       particles.push({
         x: Math.random() * w,
         y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: (Math.random() - 0.5) * 0.35,
-        r: 1.5 + Math.random() * 1.8,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: 1.4 + Math.random() * 2,
         c: Math.random() > 0.5 ? NODE : NODE2,
       });
     }
@@ -179,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const dx = a.x - b.x, dy = a.y - b.y;
         const dist = Math.hypot(dx, dy);
         if (dist < MAX_DIST) {
-          const alpha = (1 - dist / MAX_DIST) * 0.5;
+          const alpha = (1 - dist / MAX_DIST) * 0.45;
           ctx.strokeStyle = `rgba(${LINK},${alpha})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
@@ -188,19 +192,51 @@ document.addEventListener("DOMContentLoaded", () => {
           ctx.stroke();
         }
       }
+
+      // Líneas hacia el cursor (más brillantes)
+      if (mouse.x !== null) {
+        const dxm = a.x - mouse.x, dym = a.y - mouse.y;
+        const dm = Math.hypot(dxm, dym);
+        if (dm < MOUSE_DIST) {
+          const alpha = (1 - dm / MOUSE_DIST) * 0.8;
+          ctx.strokeStyle = `rgba(${LINK_M},${alpha})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(mouse.x, mouse.y);
+          ctx.stroke();
+        }
+      }
     }
 
-    // Nodos
+    // Nodos con brillo neón
+    ctx.shadowBlur = 8;
     for (const p of particles) {
+      ctx.shadowColor = p.c;
       ctx.fillStyle = p.c;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
       ctx.fill();
     }
+    ctx.shadowBlur = 0;
   }
 
   function step() {
     for (const p of particles) {
+      // Atracción suave hacia el cursor
+      if (mouse.x !== null) {
+        const dx = mouse.x - p.x, dy = mouse.y - p.y;
+        const d = Math.hypot(dx, dy);
+        if (d < MOUSE_DIST && d > 1) {
+          p.vx += (dx / d) * 0.012;
+          p.vy += (dy / d) * 0.012;
+        }
+      }
+      // Límite de velocidad (evita que se amontonen)
+      const sp = Math.hypot(p.vx, p.vy);
+      const max = 0.85;
+      if (sp > max) { p.vx = (p.vx / sp) * max; p.vy = (p.vy / sp) * max; }
+
       p.x += p.vx;
       p.y += p.vy;
       if (p.x < 0 || p.x > w) p.vx *= -1;
@@ -220,6 +256,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (raf) cancelAnimationFrame(raf);
     raf = null;
   }
+
+  // Interacción con el cursor (el canvas no captura clics; escuchamos en el hero)
+  host.addEventListener("pointermove", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  host.addEventListener("pointerleave", () => { mouse.x = mouse.y = null; });
 
   // Inicializar
   size();
