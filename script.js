@@ -142,6 +142,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let running = false;
   const mouse = { x: null, y: null };
 
+  // Estado de la animación de entrada (las partículas forman el logo)
+  let mode = "free";       // "intro" mientras forman el logo, luego "free"
+  let holdStart = 0;       // marca de tiempo cuando el logo ya está formado
+  let logoTargets = [];    // puntos (normalizados) muestreados del logo
+
   // Colores de marca
   const NODE = "rgba(10,116,218,0.95)";  // azul
   const NODE2 = "rgba(0,194,255,0.95)";  // cyan
@@ -158,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     // Densidad según área (limitada para mantenerlo ligero)
-    const count = Math.max(24, Math.min(72, Math.round((w * h) / 11000)));
+    const count = Math.max(30, Math.min(82, Math.round((w * h) / 10500)));
     particles = [];
     for (let i = 0; i < count; i++) {
       particles.push({
@@ -222,6 +227,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function step() {
+    // Fase de entrada: las partículas se mueven hacia la silueta del logo
+    if (mode === "intro") {
+      let allClose = true;
+      for (const p of particles) {
+        if (p.tx == null) { allClose = false; continue; }
+        p.x += (p.tx - p.x) * 0.07;
+        p.y += (p.ty - p.y) * 0.07;
+        if (Math.abs(p.tx - p.x) > 1.3 || Math.abs(p.ty - p.y) > 1.3) allClose = false;
+      }
+      if (allClose) {
+        if (!holdStart) {
+          holdStart = performance.now();
+        } else if (performance.now() - holdStart > 1100) {
+          // Liberar: dispersión suave hacia la red libre
+          mode = "free";
+          for (const p of particles) {
+            p.vx = (Math.random() - 0.5) * 0.5;
+            p.vy = (Math.random() - 0.5) * 0.5;
+          }
+        }
+      }
+      draw();
+      raf = requestAnimationFrame(step);
+      return;
+    }
+
+    // Fase libre: red interactiva (comportamiento normal)
     for (const p of particles) {
       // Atracción suave hacia el cursor
       if (mouse.x !== null) {
@@ -265,9 +297,68 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   host.addEventListener("pointerleave", () => { mouse.x = mouse.y = null; });
 
+  // Muestrea los píxeles del logo para obtener puntos de la silueta (solo el emblema)
+  function buildLogoTargets(cb) {
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const SS = 132;
+        const ratio = img.naturalHeight / img.naturalWidth || 1;
+        const sw = SS, sh = Math.max(1, Math.round(SS * ratio));
+        const off = document.createElement("canvas");
+        off.width = sw; off.height = sh;
+        const octx = off.getContext("2d");
+        octx.drawImage(img, 0, 0, sw, sh);
+        const maxY = Math.round(sh * 0.72); // recorta el texto "Aimarktech" inferior
+        const data = octx.getImageData(0, 0, sw, maxY).data;
+        const pts = [];
+        for (let y = 0; y < maxY; y += 2) {
+          for (let x = 0; x < sw; x += 2) {
+            const i = (y * sw + x) * 4;
+            const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
+            // Incluir píxeles visibles que no sean casi blancos (fondo)
+            if (a > 130 && !(r > 235 && g > 235 && b > 235)) {
+              pts.push([x / sw, y / sw]); // normalizado por ancho (logo ~cuadrado)
+            }
+          }
+        }
+        cb(pts);
+      } catch (e) { cb([]); }
+    };
+    img.onerror = () => cb([]);
+    img.src = "assets/logo.png";
+  }
+
+  // Asigna a cada partícula un punto destino dentro del hero
+  function assignLogoTargets() {
+    if (!logoTargets.length) return false;
+    const L = Math.min(w, h) * 0.62;
+    const cx = w * 0.5, cy = h * 0.46;
+    for (const p of particles) {
+      const pt = logoTargets[(Math.random() * logoTargets.length) | 0];
+      p.tx = cx + (pt[0] - 0.5) * L;
+      p.ty = cy + (pt[1] - 0.34) * L;
+    }
+    return true;
+  }
+
   // Inicializar
   size();
   draw(); // primer fotograma estático (también cubre reduce-motion)
+
+  // Intentar la animación de entrada formando el logo
+  buildLogoTargets((pts) => {
+    logoTargets = pts;
+    if (!assignLogoTargets()) return; // sin puntos -> se queda en modo libre
+    if (prefersReduced) {
+      // Sin animación: dejar las partículas formando el logo de forma estática
+      for (const p of particles) { p.x = p.tx; p.y = p.ty; }
+      draw();
+    } else {
+      mode = "intro";
+      holdStart = 0;
+    }
+  });
 
   // Pausar cuando el hero no está visible (ahorra batería/CPU)
   if ("IntersectionObserver" in window) {
@@ -287,6 +378,7 @@ document.addEventListener("DOMContentLoaded", () => {
     rt = setTimeout(() => {
       const wasRunning = running;
       stop();
+      mode = "free"; // evita destinos obsoletos tras recrear partículas
       size();
       draw();
       if (wasRunning) start();
