@@ -128,28 +128,84 @@ a { color: inherit; text-decoration: none; }
 .hero-trust li { font-size: .95rem; color: var(--ink-soft); }
 .hero-trust strong { display: block; font-family: var(--font-head); font-weight: 900; font-size: 1.6rem; color: var(--blue); }
 
-/* Arte del hero */
-.hero-art { position: relative; min-height: 360px; }
-.hero-orb {
-  position: absolute; inset: 0; margin: auto; width: 280px; height: 280px; border-radius: 50%;
-  background: var(--grad-tri); filter: blur(8px); opacity: .25;
-  animation: float 7s ease-in-out infinite;
-}
-.hero-card {
-  position: absolute; background: #fff; border: 1px solid var(--line);
-  padding: 14px 18px; border-radius: 14px; box-shadow: var(--shadow-md);
-  font-family: var(--font-head); font-weight: 700; font-size: .92rem;
-  display: flex; align-items: center; gap: 10px; white-space: nowrap;
-}
-.hero-card-1 { top: 6%; left: 0; animation: float 6s ease-in-out infinite; }
-.hero-card-2 { top: 46%; right: -4%; animation: float 6s ease-in-out infinite .8s; }
-.hero-card-3 { bottom: 4%; left: 12%; animation: float 6s ease-in-out infinite 1.6s; }
-.dot { width: 11px; height: 11px; border-radius: 50%; }
-.dot-blue { background: var(--blue); }
-.dot-green { background: var(--green); }
-.dot-yellow { background: var(--yellow); }
+/* ===================== SISTEMA SOLAR (Hero) ===================== */
+.hero-art { position: relative; display: grid; place-items: center; min-height: clamp(320px, 40vw, 460px); }
 
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+.solar {
+  position: relative;
+  width: clamp(300px, 34vw, 430px);
+  aspect-ratio: 1 / 1;
+}
+
+/* Sol = Aimarktech */
+.sun {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 33%; height: 33%; border-radius: 50%; z-index: 5;
+  display: grid; place-content: center; text-align: center; gap: 2px; padding: 8px;
+  background: radial-gradient(circle at 35% 30%, #fff 0%, #eaf4ff 35%, var(--cyan) 70%, var(--blue) 100%);
+  box-shadow:
+    0 0 0 6px rgba(255,255,255,.5),
+    0 0 30px 6px rgba(0,194,255,.55),
+    0 0 70px 18px rgba(10,116,218,.45);
+  animation: sun-glow 4s ease-in-out infinite;
+}
+.sun-logo { width: 56%; max-width: 80px; margin: 0 auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,.15)); }
+.sun-name { font-family: var(--font-head); font-weight: 900; font-size: clamp(.6rem, 1.5vw, .8rem); color: var(--blue); letter-spacing: -.3px; }
+
+@keyframes sun-glow {
+  0%, 100% { box-shadow: 0 0 0 6px rgba(255,255,255,.5), 0 0 30px 6px rgba(0,194,255,.5), 0 0 70px 18px rgba(10,116,218,.4); }
+  50%      { box-shadow: 0 0 0 7px rgba(255,255,255,.6), 0 0 42px 10px rgba(0,194,255,.7), 0 0 90px 26px rgba(10,116,218,.55); }
+}
+
+/* Anillos orbitales (uno por planeta) */
+.ring {
+  position: absolute; top: 50%; left: 50%;
+  border-radius: 50%; border: 1px dashed rgba(10,116,218,.18);
+  animation: spin var(--dur) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+/* Centrado por margen (no por transform, para no romper la animación spin).
+   Los % de margen son relativos al ancho del padre, que es cuadrado. */
+.ring-inner { width: 56%; height: 56%; margin: -28% 0 0 -28%; --dur: 24s; }
+.ring-outer { width: 88%; height: 88%; margin: -44% 0 0 -44%; --dur: 40s; border-color: rgba(40,167,69,.16); }
+
+/* Planeta: anclado al punto superior del anillo */
+.planet { position: absolute; top: 0; left: 50%; transform: translate(-50%, -50%); }
+
+/* Contra-rotación: mantiene el contenido siempre derecho */
+.pi {
+  display: inline-flex; align-items: center; gap: 7px;
+  animation: spin var(--dur) linear infinite reverse;
+  animation-delay: var(--delay, 0s);
+}
+.ring-inner .pi { animation-duration: 24s; }
+.ring-outer .pi { animation-duration: 40s; }
+
+/* Chips de conceptos (órbita interna) */
+.concept .pi {
+  background: #fff; border: 1px solid var(--line); border-radius: 50px;
+  padding: 8px 14px; box-shadow: var(--shadow-md);
+  font-family: var(--font-head); font-weight: 700; font-size: .8rem; color: var(--ink);
+  max-width: 150px; line-height: 1.2;
+}
+.pdot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.pdot-blue { background: var(--blue); }
+.pdot-green { background: var(--green); }
+.pdot-yellow { background: var(--yellow); }
+
+/* Planetas de servicios (órbita externa) */
+.service .pi {
+  width: 50px; height: 50px; border-radius: 50%; justify-content: center;
+  background: #fff; border: 1px solid var(--line); box-shadow: var(--shadow-md);
+  font-size: 1.5rem;
+}
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ring, .pi, .sun { animation: none !important; }
+}
+
 
 /* ===================== MARQUEE ===================== */
 .marquee { background: var(--bg-dark); color: #fff; overflow: hidden; padding: 16px 0; }
