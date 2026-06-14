@@ -69,6 +69,24 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ---------- Formulario de contacto ---------- */
   const form = document.getElementById("contactForm");
   const status = document.getElementById("formStatus");
+
+  /* Mostrar/ocultar el campo "Otro" según la selección */
+  const tipoSel = document.getElementById("tipo");
+  const fieldOtro = document.getElementById("fieldOtro");
+  const otroInput = document.getElementById("otro");
+  if (tipoSel && fieldOtro) {
+    const toggleOtro = () => {
+      const isOtro = tipoSel.value === "Otro";
+      fieldOtro.hidden = !isOtro;
+      if (isOtro) {
+        otroInput.focus();
+      } else {
+        otroInput.value = "";
+      }
+    };
+    tipoSel.addEventListener("change", toggleOtro);
+  }
+
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -83,7 +101,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       // Sin backend todavía: enviamos los datos a WhatsApp.
-      const tipo = (data.get("tipo") || "").toString();
+      let tipo = (data.get("tipo") || "").toString();
+      const otro = (data.get("otro") || "").toString().trim();
+      if (tipo === "Otro") {
+        tipo = otro ? `Otro: ${otro}` : "Otro (sin especificar)";
+      }
       const mensaje = (data.get("mensaje") || "").toString();
       const texto =
         `Hola Aimarktech, soy ${nombre}.\n` +
@@ -95,6 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
       status.textContent = "¡Listo! Te llevo a WhatsApp para enviar tu solicitud…";
       window.open(`https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(texto)}`, "_blank");
       form.reset();
+      if (fieldOtro) fieldOtro.hidden = true;
     });
   }
 });
