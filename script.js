@@ -142,11 +142,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let running = false;
   const mouse = { x: null, y: null };
 
-  // Estado de la animación de entrada (las partículas forman el logo)
-  let mode = "free";       // "intro" mientras forman el logo, luego "free"
-  let holdStart = 0;       // marca de tiempo cuando el logo ya está formado
-  let logoTargets = [];    // puntos (normalizados) muestreados del logo
-  let extras = [];         // partículas TEMPORALES para nitidez del logo (se desvanecen)
+  // Estado de la animación de entrada (las partículas forman la letra "A")
+  let mode = "free";       // "intro" mientras forman la "A", luego "free"
+  let holdStart = 0;       // marca de tiempo cuando la "A" ya está formada
+  let extras = [];         // partículas TEMPORALES para nitidez (se desvanecen)
 
   // Colores de marca
   const NODE = "rgba(10,116,218,0.95)";  // azul
@@ -328,73 +327,55 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   host.addEventListener("pointerleave", () => { mouse.x = mouse.y = null; });
 
-  // Muestrea los píxeles del logo para obtener puntos de la silueta (solo el emblema)
-  function buildLogoTargets(cb) {
-    const img = new Image();
-    img.onload = () => {
-      try {
-        const SS = 132;
-        const ratio = img.naturalHeight / img.naturalWidth || 1;
-        const sw = SS, sh = Math.max(1, Math.round(SS * ratio));
-        const off = document.createElement("canvas");
-        off.width = sw; off.height = sh;
-        const octx = off.getContext("2d");
-        octx.drawImage(img, 0, 0, sw, sh);
-        const maxY = Math.round(sh * 0.72); // recorta el texto "Aimarktech" inferior
-        const data = octx.getImageData(0, 0, sw, maxY).data;
-        const pts = [];
-        for (let y = 0; y < maxY; y += 2) {
-          for (let x = 0; x < sw; x += 2) {
-            const i = (y * sw + x) * 4;
-            const r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
-            // Incluir píxeles visibles que no sean casi blancos (fondo)
-            if (a > 130 && !(r > 235 && g > 235 && b > 235)) {
-              pts.push([x / sw, y / sw]); // normalizado por ancho (logo ~cuadrado)
-            }
-          }
-        }
-        cb(pts);
-      } catch (e) { cb([]); }
-    };
-    img.onerror = () => cb([]);
-    img.src = "assets/logo.png";
+  // Genera puntos a lo largo de los trazos de la letra "A" (coords normalizadas, centro 0)
+  function letterAPoints(total) {
+    const apex = [0, -0.46], bl = [-0.30, 0.46], br = [0.30, 0.46];
+    const lerp = (a, b, t) => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+    const tcb = 0.62; // posición del travesaño
+    const lc = lerp(apex, bl, tcb), rc = lerp(apex, br, tcb);
+    const segs = [[apex, bl], [apex, br], [lc, rc]]; // pierna izq, pierna der, travesaño
+    const lens = segs.map((s) => Math.hypot(s[1][0] - s[0][0], s[1][1] - s[0][1]));
+    const tot = lens.reduce((a, b) => a + b, 0);
+    const pts = [];
+    for (let s = 0; s < segs.length; s++) {
+      const n = Math.max(2, Math.round((total * lens[s]) / tot));
+      for (let i = 0; i < n; i++) pts.push(lerp(segs[s][0], segs[s][1], n > 1 ? i / (n - 1) : 0));
+    }
+    return pts;
   }
 
-  // Asigna destinos formando el logo; usa distribución uniforme y partículas extra temporales
+  // Asigna destinos formando la letra "A"; distribución uniforme + partículas extra temporales
   function assignLogoTargets() {
-    if (!logoTargets.length) return false;
-    const L = Math.min(w, h) * 0.62;
+    const L = Math.min(w, h) * 0.6;
     const cx = w * 0.5, cy = h * 0.46;
-    const map = (pt) => [cx + (pt[0] - 0.5) * L, cy + (pt[1] - 0.34) * L];
+    const GREEN = "rgba(40,167,69,0.95)";
+    const want = Math.max(160, particles.length + 90);
+    const pool = letterAPoints(want);
 
-    // Baraja los puntos para una cobertura uniforme (Fisher-Yates)
-    const pool = logoTargets.slice();
+    // Baraja para una formación más orgánica (Fisher-Yates)
     for (let i = pool.length - 1; i > 0; i--) {
       const j = (Math.random() * (i + 1)) | 0;
       const t = pool[i]; pool[i] = pool[j]; pool[j] = t;
     }
+    const jit = () => (Math.random() - 0.5) * 3; // pequeño desorden para que no se vea rígido
+    const T = pool.length, n = particles.length;
 
-    // Total de puntos para que la silueta se vea nítida (limitado, son temporales)
-    const T = Math.min(pool.length, Math.max(150, particles.length + 80));
-    const tgt = [];
-    for (let i = 0; i < T; i++) tgt.push(map(pool[((i * pool.length) / T) | 0]));
-
-    // Las partículas permanentes toman los primeros destinos
-    const n = particles.length;
+    // Partículas permanentes a los primeros destinos
     for (let k = 0; k < n; k++) {
-      const t = tgt[k % T];
-      particles[k].tx = t[0];
-      particles[k].ty = t[1];
+      const pt = pool[k % T];
+      particles[k].tx = cx + pt[0] * L + jit();
+      particles[k].ty = cy + pt[1] * L + jit();
     }
 
-    // El resto son partículas TEMPORALES (se desvanecen al liberar)
+    // El resto son partículas TEMPORALES (se desvanecen al liberar). La base va en verde.
     extras = [];
     for (let i = n; i < T; i++) {
+      const pt = pool[i];
       extras.push({
         x: Math.random() * w, y: Math.random() * h,
-        tx: tgt[i][0], ty: tgt[i][1],
-        r: 1.3 + Math.random() * 1.4,
-        c: Math.random() > 0.5 ? NODE : NODE2,
+        tx: cx + pt[0] * L + jit(), ty: cy + pt[1] * L + jit(),
+        r: 1.4 + Math.random() * 1.5,
+        c: pt[1] > 0.2 ? GREEN : (Math.random() > 0.5 ? NODE : NODE2),
         alpha: 1, fade: false, vx: 0, vy: 0,
       });
     }
@@ -405,12 +386,10 @@ document.addEventListener("DOMContentLoaded", () => {
   size();
   draw(); // primer fotograma estático (también cubre reduce-motion)
 
-  // Intentar la animación de entrada formando el logo
-  buildLogoTargets((pts) => {
-    logoTargets = pts;
-    if (!assignLogoTargets()) return; // sin puntos -> se queda en modo libre
+  // Animación de entrada: las partículas forman la letra "A"
+  if (assignLogoTargets()) {
     if (prefersReduced) {
-      // Sin animación: dejar las partículas formando el logo de forma estática
+      // Sin animación: dejar la "A" formada de forma estática
       for (const p of particles) { p.x = p.tx; p.y = p.ty; }
       for (const e of extras) { e.x = e.tx; e.y = e.ty; }
       draw();
@@ -418,7 +397,7 @@ document.addEventListener("DOMContentLoaded", () => {
       mode = "intro";
       holdStart = 0;
     }
-  });
+  }
 
   // Pausar cuando el hero no está visible (ahorra batería/CPU)
   if ("IntersectionObserver" in window) {
