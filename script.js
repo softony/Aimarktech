@@ -121,3 +121,131 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
+/* =========================================================
+   RED DE PARTÍCULAS DEL HERO (constelación tecnológica)
+   Ligera: canvas + requestAnimationFrame, se pausa fuera de vista.
+   --------------------------------------------------------- */
+document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById("heroNet");
+  if (!canvas) return;
+
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ctx = canvas.getContext("2d");
+  const host = canvas.parentElement;
+
+  let w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let particles = [];
+  let raf = null;
+  let running = false;
+
+  // Colores de marca
+  const NODE = "rgba(10,116,218,0.9)";   // azul
+  const NODE2 = "rgba(0,194,255,0.9)";   // cyan
+  const LINK = "10,116,218";             // base para líneas (con alpha variable)
+  const MAX_DIST = 120;                  // distancia máxima para conectar
+
+  function size() {
+    w = host.clientWidth;
+    h = host.clientHeight;
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    // Densidad según área (limitada para mantenerlo ligero)
+    const count = Math.max(18, Math.min(46, Math.round((w * h) / 9000)));
+    particles = [];
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        r: 1.5 + Math.random() * 1.8,
+        c: Math.random() > 0.5 ? NODE : NODE2,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    // Líneas entre partículas cercanas
+    for (let i = 0; i < particles.length; i++) {
+      const a = particles[i];
+      for (let j = i + 1; j < particles.length; j++) {
+        const b = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < MAX_DIST) {
+          const alpha = (1 - dist / MAX_DIST) * 0.5;
+          ctx.strokeStyle = `rgba(${LINK},${alpha})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Nodos
+    for (const p of particles) {
+      ctx.fillStyle = p.c;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function step() {
+    for (const p of particles) {
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0 || p.x > w) p.vx *= -1;
+      if (p.y < 0 || p.y > h) p.vy *= -1;
+    }
+    draw();
+    raf = requestAnimationFrame(step);
+  }
+
+  function start() {
+    if (running || prefersReduced) return;
+    running = true;
+    raf = requestAnimationFrame(step);
+  }
+  function stop() {
+    running = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+  }
+
+  // Inicializar
+  size();
+  draw(); // primer fotograma estático (también cubre reduce-motion)
+
+  // Pausar cuando el hero no está visible (ahorra batería/CPU)
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => (e.isIntersecting ? start() : stop())),
+      { threshold: 0.05 }
+    );
+    io.observe(host);
+  } else {
+    start();
+  }
+
+  // Redimensionar con debounce
+  let rt;
+  window.addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(() => {
+      const wasRunning = running;
+      stop();
+      size();
+      draw();
+      if (wasRunning) start();
+    }, 200);
+  });
+});

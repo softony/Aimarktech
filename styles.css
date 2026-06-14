@@ -130,26 +130,38 @@ a { color: inherit; text-decoration: none; }
 
 /* Arte del hero */
 .hero-art { position: relative; min-height: 360px; }
-.hero-orb {
-  position: absolute; inset: 0; margin: auto; width: 280px; height: 280px; border-radius: 50%;
-  background: var(--grad-tri); filter: blur(8px); opacity: .25;
-  animation: float 7s ease-in-out infinite;
+
+/* Lienzo de la red de partículas (constelación tecnológica) */
+.hero-net { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+
+/* Brillo de energía detrás de la red */
+.hero-glow {
+  position: absolute; inset: 0; margin: auto; width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,194,255,.35), rgba(10,116,218,.12) 55%, transparent 72%);
+  filter: blur(6px); z-index: 0;
+  animation: glow-pulse 5s ease-in-out infinite;
 }
+@keyframes glow-pulse { 0%,100% { transform: scale(1); opacity: .85; } 50% { transform: scale(1.12); opacity: 1; } }
+
 .hero-card {
-  position: absolute; background: #fff; border: 1px solid var(--line);
-  padding: 14px 18px; border-radius: 14px; box-shadow: var(--shadow-md);
+  position: absolute; z-index: 2; background: rgba(255,255,255,.92); backdrop-filter: blur(6px);
+  border: 1px solid var(--line); padding: 14px 18px; border-radius: 14px; box-shadow: var(--shadow-md);
   font-family: var(--font-head); font-weight: 700; font-size: .92rem;
   display: flex; align-items: center; gap: 10px; white-space: nowrap;
 }
 .hero-card-1 { top: 6%; left: 0; animation: float 6s ease-in-out infinite; }
 .hero-card-2 { top: 46%; right: -4%; animation: float 6s ease-in-out infinite .8s; }
 .hero-card-3 { bottom: 4%; left: 12%; animation: float 6s ease-in-out infinite 1.6s; }
-.dot { width: 11px; height: 11px; border-radius: 50%; }
-.dot-blue { background: var(--blue); }
-.dot-green { background: var(--green); }
-.dot-yellow { background: var(--yellow); }
+.dot { width: 11px; height: 11px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+.dot-blue { background: var(--blue); color: var(--blue); }
+.dot-green { background: var(--green); color: var(--green); }
+.dot-yellow { background: var(--yellow); color: var(--yellow); }
 
 @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow, .hero-card { animation: none !important; }
+}
 
 /* ===================== MARQUEE ===================== */
 .marquee { background: var(--bg-dark); color: #fff; overflow: hidden; padding: 16px 0; }
