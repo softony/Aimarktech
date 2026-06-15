@@ -3,59 +3,127 @@
    Panel privado para ver prospectos capturados por las
    herramientas (diagnósticos, posts y citas).
    ---------------------------------------------------------
-   Nota: la contraseña aquí es solo una barrera básica del
-   lado cliente (igual que el ejemplo del video). Para datos
-   sensibles se debe usar autenticación real en el servidor.
+   Dos modos automáticos:
+   - SERVIDOR: si Supabase está configurado en Netlify, lee los
+     prospectos de la base de datos (centralizados, multi-dispositivo).
+     La contraseña que escribes se valida contra ADMIN_TOKEN.
+   - LOCAL: si no hay servidor, usa los datos guardados en este
+     navegador (localStorage) y la contraseña local de abajo.
    ========================================================= */
 
-const ADMIN_PASS = "Aimark2026"; // cámbiala por la tuya
+const ADMIN_PASS = "Aimark2026"; // fallback local (modo sin Supabase). Cámbiala.
 const LEADS_KEY = "aimarktech_leads";
 const SESSION_KEY = "aimarktech_admin_ok";
+const TOKEN_KEY = "aimarktech_admin_token";
+const LEADS_ENDPOINT = "/.netlify/functions/leads";
 
 const $ = (s) => document.querySelector(s);
 
-document.addEventListener("DOMContentLoaded", () => {
-  const login = $("#login");
-  const panel = $("#panel");
+let MODE = "local";       // 'local' | 'server'
+let SERVER_LEADS = [];
 
-  // ¿Sesión ya iniciada?
+document.addEventListener("DOMContentLoaded", () => {
+  // ¿Sesión previa? Reintenta con el token guardado.
   if (sessionStorage.getItem(SESSION_KEY) === "1") {
-    showPanel();
+    const tk = sessionStorage.getItem(TOKEN_KEY) || "";
+    attemptLogin(tk, true);
   }
 
-  $("#loginForm").addEventListener("submit", (e) => {
+  $("#loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const val = $("#pass").value;
-    if (val === ADMIN_PASS) {
-      sessionStorage.setItem(SESSION_KEY, "1");
-      showPanel();
-    } else {
-      $("#loginStatus").textContent = "Contraseña incorrecta.";
-    }
+    await attemptLogin(val, false);
   });
 
   $("#btnLogout").addEventListener("click", () => {
     sessionStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
     location.reload();
   });
 
   $("#btnClear").addEventListener("click", () => {
-    if (confirm("¿Seguro que quieres vaciar todos los prospectos guardados?")) {
+    if (MODE === "server") {
+      alert("Los prospectos están en tu base de datos Supabase. Para borrarlos, hazlo desde el panel de Supabase (tabla 'leads').");
+      return;
+    }
+    if (confirm("¿Seguro que quieres vaciar todos los prospectos guardados en este navegador?")) {
       localStorage.removeItem(LEADS_KEY);
       render();
     }
   });
 
   $("#btnExport").addEventListener("click", exportCSV);
-
-  function showPanel() {
-    login.classList.add("hidden");
-    panel.classList.remove("hidden");
-    render();
-  }
 });
 
+/* Intenta iniciar sesión: primero servidor, luego local */
+async function attemptLogin(pass, silent) {
+  const status = $("#loginStatus");
+  if (status) status.textContent = silent ? "" : "Verificando…";
+
+  const server = await tryServer(pass);
+
+  if (server.mode === "server") {
+    MODE = "server";
+    SERVER_LEADS = server.leads || [];
+    sessionStorage.setItem(SESSION_KEY, "1");
+    sessionStorage.setItem(TOKEN_KEY, pass);
+    showPanel();
+    return;
+  }
+
+  if (server.mode === "unauthorized") {
+    if (status) status.textContent = "Contraseña incorrecta.";
+    sessionStorage.removeItem(SESSION_KEY);
+    return;
+  }
+
+  // Modo local (sin servidor configurado)
+  if (pass === ADMIN_PASS) {
+    MODE = "local";
+    sessionStorage.setItem(SESSION_KEY, "1");
+    sessionStorage.setItem(TOKEN_KEY, pass);
+    showPanel();
+  } else if (!silent) {
+    if (status) status.textContent = "Contraseña incorrecta.";
+  }
+}
+
+/* Consulta el servidor. Devuelve {mode:'server'|'local'|'unauthorized', leads} */
+async function tryServer(token) {
+  try {
+    const res = await fetch(`${LEADS_ENDPOINT}?token=${encodeURIComponent(token)}`);
+    if (res.status === 401) return { mode: "unauthorized" };
+    if (!res.ok) return { mode: "local" };
+    const data = await res.json();
+    if (data && data.configured && Array.isArray(data.leads)) {
+      return { mode: "server", leads: data.leads };
+    }
+    return { mode: "local" };
+  } catch (e) {
+    return { mode: "local" }; // sin función / deploy estático
+  }
+}
+
+function showPanel() {
+  $("#login").classList.add("hidden");
+  $("#panel").classList.remove("hidden");
+  render();
+}
+
+/* Normaliza un lead del servidor al formato de la tabla */
+function normalize(l) {
+  return {
+    tipo: l.tipo,
+    nombre: l.nombre,
+    negocio: l.negocio,
+    contacto: l.contacto,
+    detalle: l.detalle,
+    fecha: l.fecha || l.created_at,
+  };
+}
+
 function getLeads() {
+  if (MODE === "server") return SERVER_LEADS.map(normalize);
   try { return JSON.parse(localStorage.getItem(LEADS_KEY) || "[]"); }
   catch (e) { return []; }
 }
@@ -64,6 +132,21 @@ function render() {
   const leads = getLeads();
   renderStats(leads);
   renderTable(leads);
+  renderModeBadge();
+}
+
+function renderModeBadge() {
+  let el = $("#modeBadge");
+  if (!el) {
+    el = document.createElement("p");
+    el.id = "modeBadge";
+    el.style.cssText = "color:var(--ink-soft);font-size:.86rem;margin-top:-14px;";
+    const head = document.querySelector(".admin-head div");
+    if (head) head.appendChild(el);
+  }
+  el.innerHTML = MODE === "server"
+    ? '🟢 Conectado a Supabase · datos centralizados (todos los dispositivos)'
+    : '🟡 Modo local · datos solo de este navegador';
 }
 
 function renderStats(leads) {

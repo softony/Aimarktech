@@ -89,13 +89,13 @@
     <div id="leadsContainer"></div>
 
     <div class="note-card">
-      <strong>ℹ️ Cómo funciona este panel.</strong> En esta versión, los datos se guardan en el
-      navegador (<code>localStorage</code>) para que puedas verlos y probar el flujo completo.
-      Para recibir los prospectos de <strong>cualquier dispositivo</strong> en un solo lugar
-      (como hace el sistema del video con Supabase), se conecta una base de datos compartida.
-      Y la <strong>IA real</strong> se activa poniendo tu API key en las variables de entorno de
-      Netlify (<code>OPENAI_API_KEY</code> o <code>ANTHROPIC_API_KEY</code>). Mientras tanto, todo
-      funciona en modo inteligente local.
+      <strong>ℹ️ Cómo funciona este panel.</strong> Tiene dos modos automáticos:
+      <br>• <strong>Modo local</strong> (por defecto): los datos se guardan en este navegador.
+      <br>• <strong>Modo Supabase</strong>: si configuras la base de datos en Netlify
+      (<code>SUPABASE_URL</code>, <code>SUPABASE_SERVICE_KEY</code> y <code>ADMIN_TOKEN</code>),
+      verás aquí los prospectos de <strong>todos los dispositivos</strong>, centralizados.
+      <br>La <strong>IA real</strong> se activa con tu API key (<code>OPENAI_API_KEY</code> o
+      <code>ANTHROPIC_API_KEY</code>). Sin esas variables, todo sigue funcionando en modo local.
     </div>
   </div>
 

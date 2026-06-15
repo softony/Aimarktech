@@ -36,7 +36,10 @@ function waLink(text) {
   return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(text)}`;
 }
 
-/* Guardado de leads en localStorage (demo del panel admin) */
+/* Guardado de leads:
+   1) Siempre en localStorage (respaldo y modo sin servidor).
+   2) Si existe la base de datos (Supabase vía Netlify Function),
+      también lo envía al servidor (sin bloquear la interfaz). */
 function saveLead(lead) {
   try {
     const key = "aimarktech_leads";
@@ -44,6 +47,16 @@ function saveLead(lead) {
     leads.unshift({ ...lead, fecha: new Date().toISOString() });
     localStorage.setItem(key, JSON.stringify(leads.slice(0, 200)));
   } catch (e) { /* almacenamiento no disponible: continuamos igual */ }
+
+  // Envío al servidor (Supabase). Best-effort: si no está configurado, se ignora.
+  try {
+    fetch("/.netlify/functions/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(lead),
+      keepalive: true,
+    }).catch(() => {});
+  } catch (e) { /* sin servidor: solo queda en localStorage */ }
 }
 
 /* Llama a la función serverless si está disponible; si no, devuelve null */
