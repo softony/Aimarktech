@@ -3,6 +3,15 @@
 [build]
   publish = "."
   command = ""
+  # Carpeta de funciones serverless (IA opcional). Si no configuras API keys,
+  # el sitio sigue funcionando 100% en modo local.
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  node_bundler = "esbuild"
 
 # Cabeceras de seguridad básicas
 [[headers]]

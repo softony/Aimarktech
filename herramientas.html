@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Herramientas con IA | Aimarktech</title>
+  <meta name="description" content="Prueba en vivo las herramientas con Inteligencia Artificial de Aimarktech: diagnóstico express de tu negocio, generador de posts para redes y agenda tu sesión." />
+  <meta name="theme-color" content="#0A74DA" />
+
+  <meta property="og:title" content="Herramientas con IA | Aimarktech" />
+  <meta property="og:description" content="Diagnóstico express con IA, generador de contenido para redes y agenda inteligente. Pruébalo gratis." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/logo.png" />
+
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="assets/tools.css" />
+</head>
+<body>
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="site-header" id="top">
+    <nav class="nav container">
+      <a href="index.html" class="brand" aria-label="Aimarktech inicio">
+        <img src="assets/logo.png" onerror="this.onerror=null;this.src='assets/logo.svg';" alt="Logo Aimarktech" class="brand-logo" />
+        <span class="brand-name">Aimarktech</span>
+      </a>
+
+      <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#filosofia">Filosofía</a></li>
+        <li><a href="index.html#servicios">Servicios</a></li>
+        <li><a href="herramientas.html">Herramientas IA</a></li>
+        <li><a href="index.html#contacto" class="nav-cta">Agenda tu diagnóstico</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===================== HERO DE HERRAMIENTAS ===================== -->
+  <section class="tools-hero">
+    <div class="container">
+      <span class="tools-badge">⚡ Powered by IA · Pruébalo gratis</span>
+      <h1>Herramientas con <span class="grad-text">Inteligencia Artificial</span></h1>
+      <p>
+        No te contamos lo que la IA puede hacer por tu negocio: <strong>te lo mostramos</strong>.
+        Prueba estas tres herramientas reales que usamos con nuestros clientes.
+      </p>
+
+      <div class="tabs" id="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="diagnostico" role="tab">
+          <span class="tab-emoji">🧠</span> Diagnóstico Express
+        </button>
+        <button class="tab-btn" data-tab="posts" role="tab">
+          <span class="tab-emoji">📱</span> Generador de Posts
+        </button>
+        <button class="tab-btn" data-tab="agenda" role="tab">
+          <span class="tab-emoji">📅</span> Agenda tu sesión
+        </button>
+      </div>
+
+      <div class="ai-status" id="aiStatus">
+        <span class="led"></span>
+        <span id="aiStatusText">Modo inteligente local activo</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PANEL: DIAGNÓSTICO EXPRESS ===================== -->
+  <section class="tool-panel active" id="panel-diagnostico">
+    <div class="container">
+      <div class="tool-grid">
+        <!-- Entrada -->
+        <div class="tool-card">
+          <h2>🧠 Diagnóstico Express con IA</h2>
+          <p class="lead">Responde 4 datos sobre tu negocio y recibe al instante un mini-diagnóstico con tu nivel de madurez digital y 3 recomendaciones priorizadas.</p>
+
+          <form id="diagForm">
+            <div class="tfield">
+              <label for="diagNombre">Tu nombre</label>
+              <input type="text" id="diagNombre" name="nombre" placeholder="¿Cómo te llamas?" required />
+            </div>
+
+            <div class="tfield">
+              <label for="diagNegocio">¿A qué se dedica tu negocio?</label>
+              <input type="text" id="diagNegocio" name="negocio" placeholder="Ej. Purificadora, consultorio dental, agencia de seguros…" required />
+            </div>
+
+            <div class="tfield">
+              <label>¿Cuál es tu reto principal hoy?</label>
+              <div class="chip-row" id="diagRetos" data-single="true">
+                <span class="chip" data-value="Consigo pocos clientes nuevos">Pocos clientes nuevos</span>
+                <span class="chip" data-value="Todo depende de mí">Todo depende de mí</span>
+                <span class="chip" data-value="Mi marketing no da resultados medibles">Marketing sin resultados</span>
+                <span class="chip" data-value="No sé cómo usar la IA">No sé usar la IA</span>
+                <span class="chip" data-value="Pierdo tiempo en tareas repetitivas">Tareas repetitivas</span>
+                <span class="chip" data-value="No tengo presencia digital">Sin presencia digital</span>
+              </div>
+            </div>
+
+            <div class="tfield">
+              <label for="diagDigital">¿Qué tan digital es tu negocio hoy?</label>
+              <select id="diagDigital" name="digital">
+                <option value="1">Apenas empiezo (no tengo redes ni sistemas)</option>
+                <option value="2">Tengo redes sociales pero sin estrategia</option>
+                <option value="3">Tengo algo de presencia y herramientas básicas</option>
+                <option value="4">Uso varias herramientas pero sin integrar</option>
+                <option value="5">Estoy bastante digitalizado, quiero optimizar</option>
+              </select>
+            </div>
+
+            <div class="tfield">
+              <label for="diagContacto">WhatsApp o correo (para enviarte el plan completo)</label>
+              <input type="text" id="diagContacto" name="contacto" placeholder="Opcional, pero recomendado" />
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">✨ Generar mi diagnóstico</button>
+          </form>
+          <div class="info-note">
+            <span class="ic">🔒</span>
+            <span>Tus datos se usan solo para darte el diagnóstico y, si lo deseas, contactarte. Sin spam.</span>
+          </div>
+        </div>
+
+        <!-- Resultado -->
+        <div class="result-box" id="diagResult">
+          <div class="result-empty">
+            <span class="big">🧠</span>
+            <p>Tu diagnóstico personalizado aparecerá aquí.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PANEL: GENERADOR DE POSTS ===================== -->
+  <section class="tool-panel" id="panel-posts">
+    <div class="container">
+      <div class="tool-grid">
+        <!-- Entrada -->
+        <div class="tool-card">
+          <h2>📱 Generador de Posts con IA</h2>
+          <p class="lead">Describe tu promoción y genera al instante una publicación lista para Instagram: imagen con tu marca + copy persuasivo + hashtags. Igual que el sistema que montamos para negocios reales.</p>
+
+          <form id="postForm">
+            <div class="tfield">
+              <label for="postNegocio">Nombre de tu negocio</label>
+              <input type="text" id="postNegocio" name="negocio" placeholder="Ej. Aimarktech" required />
+            </div>
+
+            <div class="tfield">
+              <label for="postProducto">Producto, servicio o promoción</label>
+              <input type="text" id="postProducto" name="producto" placeholder="Ej. 2x1 en consultoría, nuevo curso de IA…" required />
+            </div>
+
+            <div class="tfield">
+              <label>Tono de la publicación</label>
+              <div class="chip-row" id="postTono" data-single="true">
+                <span class="chip selected" data-value="motivador">Motivador</span>
+                <span class="chip" data-value="profesional">Profesional</span>
+                <span class="chip" data-value="cercano">Cercano y amigable</span>
+                <span class="chip" data-value="urgente">Urgente / oferta</span>
+              </div>
+            </div>
+
+            <div class="tfield">
+              <label>Formato</label>
+              <div class="format-toggle" id="postFormato" data-single="true">
+                <span class="chip selected" data-value="square">▢ Cuadrado 1:1</span>
+                <span class="chip" data-value="story">▯ Historia 9:16</span>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">✨ Generar publicación</button>
+          </form>
+          <div class="info-note">
+            <span class="ic">💡</span>
+            <span>La imagen se genera con los colores de tu marca. Conectando una API de imágenes (Kie AI / Nano Banana) se pueden generar fotos con IA reales.</span>
+          </div>
+        </div>
+
+        <!-- Resultado -->
+        <div class="result-box" id="postResult">
+          <div class="result-empty">
+            <span class="big">📱</span>
+            <p>Tu publicación lista para redes aparecerá aquí.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PANEL: AGENDA ===================== -->
+  <section class="tool-panel" id="panel-agenda">
+    <div class="container">
+      <div class="tool-grid">
+        <!-- Entrada -->
+        <div class="tool-card">
+          <h2>📅 Agenda tu sesión de diagnóstico</h2>
+          <p class="lead">Sesión gratuita de 30 minutos. Elige el día y la hora que mejor te queden y confirma; te llevamos directo a WhatsApp para cerrar la cita.</p>
+
+          <form id="agendaForm">
+            <div class="tfield">
+              <label for="agNombre">Nombre</label>
+              <input type="text" id="agNombre" name="nombre" placeholder="Tu nombre" required />
+            </div>
+            <div class="tfield">
+              <label for="agContacto">WhatsApp o correo</label>
+              <input type="text" id="agContacto" name="contacto" placeholder="Para confirmarte la cita" required />
+            </div>
+            <div class="tfield">
+              <label>Elige un día</label>
+              <div class="cal-grid" id="agDias"></div>
+            </div>
+            <div class="tfield">
+              <label>Elige un horario</label>
+              <div class="cal-grid" id="agHoras"></div>
+            </div>
+
+            <div class="summary-card" id="agSummary" hidden></div>
+
+            <button type="submit" class="btn btn-primary btn-block">✅ Confirmar mi cita</button>
+          </form>
+          <div class="success-msg" id="agSuccess"></div>
+        </div>
+
+        <!-- Lateral informativo -->
+        <div class="result-box">
+          <div class="diag-block">
+            <h4>🎯 ¿Qué incluye tu sesión?</h4>
+            <ul class="diag-list">
+              <li><span class="ic">✅</span> Revisión de tu situación actual y tus retos.</li>
+              <li><span class="ic">✅</span> Detección de oportunidades de IA y marketing.</li>
+              <li><span class="ic">✅</span> Primeros pasos concretos para tu negocio.</li>
+              <li><span class="ic">✅</span> Sin compromiso ni costo.</li>
+            </ul>
+          </div>
+          <div class="diag-block">
+            <h4>🧠 Nuestra filosofía</h4>
+            <p style="color:var(--ink-soft);font-size:.96rem;">
+              Primero trabajamos en el empresario, después en el negocio. No vendemos campañas ni
+              seguidores: diseñamos contigo un camino de crecimiento rentable y escalable.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.png" onerror="this.onerror=null;this.src='assets/logo.svg';" alt="Logo Aimarktech" class="footer-logo" />
+        <p>Aimarktech — IA, Marketing y Mentalidad Empresarial.</p>
+        <p class="footer-puv">No solo digitalizamos negocios, los transformamos en empresas rentables, escalables y emocionalmente conectadas.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Navegación</h4>
+        <a href="index.html#filosofia">Filosofía</a>
+        <a href="index.html#servicios">Servicios</a>
+        <a href="herramientas.html">Herramientas IA</a>
+        <a href="index.html#contacto">Contacto</a>
+      </div>
+      <div class="footer-contact">
+        <h4>Contacto</h4>
+        <a id="waFooter" href="#" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="https://s.blinq.me/MzcBebgiqBUE" target="_blank" rel="noopener">Tarjeta digital</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© <span id="year"></span> Aimarktech. Piensa grande. Actúa inteligente.</p>
+    </div>
+  </footer>
+
+  <!-- Botón flotante WhatsApp -->
+  <a id="waFloat" href="#" class="wa-float" target="_blank" rel="noopener" aria-label="Escríbeme por WhatsApp">
+    <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.715zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+  </a>
+
+  <script src="assets/tools.js"></script>
+</body>
+</html>
