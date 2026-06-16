@@ -95,7 +95,11 @@ Datos del negocio:
 - Nombre del dueño: ${p.nombre}
 - Giro del negocio: ${p.negocio}
 - Reto principal: ${p.reto}
+- Objetivo principal a 6 meses: ${p.objetivo || "no especificado"}
+- Qué ha intentado para crecer: ${p.intentado || "no especificado"}
 - Nivel de madurez digital (1-5): ${p.digital}
+
+Las 3 recomendaciones deben ser hallazgos accionables y específicos para su giro y su objetivo (son un adelanto de valor real; el plan completo de 90 días se entrega en una sesión).
 
 Tono: cercano, profesional y en español de México. Recomendaciones concretas y específicas para su giro.`;
 }

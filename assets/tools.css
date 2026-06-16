@@ -315,3 +315,120 @@
   .tool-grid { grid-template-columns: 1fr; }
   .showcase-grid { grid-template-columns: 1fr; }
 }
+
+
+/* =========================================================
+   EMBUDO UNIFICADO + PSICOLOGÍA (Zeigarnik, progreso, escasez)
+   ========================================================= */
+
+/* Badge de escasez honesta */
+.scarcity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 206, 0, .14);
+  border: 1px solid rgba(255, 206, 0, .5);
+  color: #8a6d00;
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: .8rem;
+  letter-spacing: .3px;
+  padding: 7px 15px;
+  border-radius: 50px;
+  margin-bottom: 14px;
+}
+
+/* Micro-texto BYAF (But You Are Free) */
+.byaf {
+  font-size: .85rem !important;
+  color: var(--ink-soft) !important;
+  font-style: italic;
+}
+
+/* ---------- Barra de progreso "Paso X de 3" ---------- */
+.diag-progress { margin: 4px 0 22px; }
+.diag-progress-bar {
+  height: 9px;
+  background: var(--line);
+  border-radius: 50px;
+  overflow: hidden;
+}
+.diag-progress-bar span {
+  display: block;
+  height: 100%;
+  background: var(--grad);
+  border-radius: 50px;
+  transition: width .45s cubic-bezier(.4, 0, .2, 1);
+}
+.diag-progress-label {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: .85rem;
+  color: var(--blue);
+  margin-top: 9px;
+}
+
+/* ---------- Pasos del formulario ---------- */
+.diag-step { display: none; }
+.diag-step.active { display: block; animation: fadeUp .4s ease; }
+
+.diag-nav {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+}
+.diag-nav .btn { flex: 1; }
+.diag-nav #diagPrev { flex: 0 0 auto; }
+
+/* ---------- Bucle abierto: plan completo "bloqueado" ---------- */
+.plan-locked {
+  position: relative;
+  background: var(--bg-dark);
+  color: #fff;
+  border-radius: 16px;
+  padding: 22px 24px;
+  margin: 18px 0;
+  overflow: hidden;
+}
+.plan-locked::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 35%, rgba(7, 20, 38, .55) 100%);
+  pointer-events: none;
+}
+.plan-locked-head {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.plan-locked ul { list-style: none; display: grid; gap: 11px; position: relative; z-index: 1; }
+.plan-locked li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: .96rem;
+  color: #dbe6f2;
+}
+.plan-locked li .ic { flex: none; }
+
+/* ---------- Sección de cierre en la home (index) ---------- */
+.cta-final { text-align: center; max-width: 640px; margin: 0 auto; }
+.cta-final-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 18px 0 14px;
+}
+.btn-lg { font-size: 1.05rem; padding: 16px 28px; }
+.cta-final .btn-whatsapp { margin-top: 4px; }
+
+@media (max-width: 560px) {
+  .cta-final-actions { flex-direction: column; }
+  .cta-final-actions .btn { width: 100%; }
+}
