@@ -179,27 +179,60 @@ function initDiagnostico() {
   const form = $("#diagForm");
   if (!form) return;
 
+  const steps = $$(".diag-step", form);
+  const total = steps.length;
+  const bar = $("#diagBar");
+  const label = $("#diagStepLabel");
+  const prevBtn = $("#diagPrev");
+  const nextBtn = $("#diagNext");
+  const submitBtn = $("#diagSubmit");
+  const titles = ["Sobre tu negocio", "Tu situación actual", "Recibe tu diagnóstico"];
+  let cur = 1;
+
+  function show(step) {
+    cur = Math.max(1, Math.min(total, step));
+    steps.forEach((s) => s.classList.toggle("active", Number(s.dataset.step) === cur));
+    if (bar) bar.style.width = `${(cur / total) * 100}%`;
+    if (label) label.textContent = `Paso ${cur} de ${total} · ${titles[cur - 1] || ""}`;
+    if (prevBtn) prevBtn.hidden = cur === 1;
+    if (nextBtn) nextBtn.hidden = cur === total;
+    if (submitBtn) submitBtn.hidden = cur !== total;
+  }
+
+  function validateStep(step) {
+    if (step === 1) {
+      if (!$("#diagNombre").value.trim() || !$("#diagNegocio").value.trim()) {
+        alert("Escribe tu nombre y a qué se dedica tu negocio.");
+        return false;
+      }
+    }
+    if (step === 2) {
+      if (!getChip("diagRetos")) { alert("Elige tu reto principal."); return false; }
+      if (!getChip("diagObjetivo")) { alert("Elige tu objetivo principal."); return false; }
+    }
+    return true;
+  }
+
+  if (nextBtn) nextBtn.addEventListener("click", () => { if (validateStep(cur)) show(cur + 1); });
+  if (prevBtn) prevBtn.addEventListener("click", () => show(cur - 1));
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const nombre = $("#diagNombre").value.trim();
-    const negocio = $("#diagNegocio").value.trim();
-    const reto = getChip("diagRetos");
-    const digital = parseInt($("#diagDigital").value, 10);
-    const contacto = $("#diagContacto").value.trim();
+    if (!validateStep(1)) { show(1); return; }
+    if (!validateStep(2)) { show(2); return; }
 
-    if (!nombre || !negocio) {
-      alert("Por favor escribe tu nombre y a qué se dedica tu negocio.");
-      return;
-    }
-    if (!reto) {
-      alert("Elige tu reto principal para personalizar el diagnóstico.");
-      return;
-    }
+    const payload = {
+      nombre: $("#diagNombre").value.trim(),
+      negocio: $("#diagNegocio").value.trim(),
+      reto: getChip("diagRetos"),
+      objetivo: getChip("diagObjetivo"),
+      intentado: getChip("diagIntentado"),
+      digital: parseInt($("#diagDigital").value, 10),
+      contacto: $("#diagContacto").value.trim(),
+    };
 
     const out = $("#diagResult");
     out.innerHTML = thinkingHTML("Analizando tu negocio con IA…");
-
-    const payload = { nombre, negocio, reto, digital, contacto };
 
     // Intento de IA real; si no, lógica local inteligente
     let result = await callAI("diagnostico", payload);
@@ -211,13 +244,15 @@ function initDiagnostico() {
 
     saveLead({
       tipo: "Diagnóstico",
-      nombre, negocio, reto, contacto,
-      detalle: `Madurez digital: ${digital}/5 · Puntuación: ${result.diagnostico.score}`,
+      nombre: payload.nombre, negocio: payload.negocio, contacto: payload.contacto,
+      detalle: `Reto: ${payload.reto} · Objetivo: ${payload.objetivo} · Madurez: ${payload.digital}/5 · Puntuación: ${result.diagnostico.score}`,
     });
   });
+
+  show(1);
 }
 
-function localDiagnostico({ nombre, negocio, reto, digital }) {
+function localDiagnostico({ nombre, negocio, reto, objetivo, digital }) {
   // Puntuación base por madurez digital + ajuste por reto
   const base = [0, 22, 38, 55, 70, 84][digital] || 40;
   const jitter = Math.floor(Math.random() * 8);
@@ -265,7 +300,7 @@ function localDiagnostico({ nombre, negocio, reto, digital }) {
   const r = retoMap[reto] || retoMap["No sé cómo usar la IA"];
 
   const recomendaciones = [
-    { pilar: "🧠 Mentalidad", txt: `Antes que herramientas, define tu visión de crecimiento para ${negocio} y bloquea tiempo cada semana para trabajar EN el negocio, no solo EN la operación.` },
+    { pilar: "🧠 Mentalidad", txt: `Define una meta clara${objetivo ? ` ("${objetivo.toLowerCase()}")` : ""} para ${negocio} y bloquea tiempo cada semana para trabajar EN el negocio, no solo EN la operación.` },
     { pilar: "🤖 Tecnología & IA", txt: r.tech },
     { pilar: "📈 Crecimiento", txt: r.crecimiento },
   ];
@@ -281,14 +316,14 @@ function localDiagnostico({ nombre, negocio, reto, digital }) {
 
 function renderDiagnostico(out, d, payload) {
   const recs = d.recomendaciones.map(
-    (r) => `<li><span class="ic">${r.pilar.split(" ")[0]}</span><div><strong>${r.pilar.replace(/^\S+\s/, "")}:</strong> ${escapeHTML(r.txt)}</div></li>`
+    (r) => `<li><span class="ic">${r.pilar.split(" ")[0]}</span><div><strong>${escapeHTML(r.pilar.replace(/^\S+\s/, ""))}:</strong> ${escapeHTML(r.txt)}</div></li>`
   ).join("");
 
   const waText =
     `Hola Aimarktech, soy ${payload.nombre} (${payload.negocio}).\n` +
-    `Hice el Diagnóstico Express y obtuve ${d.score}/100 — ${d.nivel}.\n` +
-    `Mi reto principal: ${payload.reto}.\n` +
-    `Quiero el plan completo para mi negocio.`;
+    `Hice el Diagnóstico Express: ${d.score}/100 — ${d.nivel}.\n` +
+    `Mi reto: ${payload.reto}. Mi objetivo: ${payload.objetivo}.\n` +
+    `Quiero reservar mi lugar para la Sesión Estratégica Privada.`;
 
   out.innerHTML = `
     <div class="diag-score">
@@ -305,18 +340,36 @@ function renderDiagnostico(out, d, payload) {
     </div>
 
     <div class="diag-block">
-      <h4>🎯 Tus 3 recomendaciones priorizadas</h4>
+      <h4>🎯 3 hallazgos para empezar ya</h4>
       <ul class="diag-list pillars">${recs}</ul>
     </div>
 
-    <a href="${waLink(waText)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block">
-      Quiero mi plan completo por WhatsApp
-    </a>
-    <div class="info-note" style="margin-top:14px;">
-      <span class="ic">📌</span>
-      <span>Este es un diagnóstico express automático. En tu sesión gratuita lo profundizamos con tu caso real.</span>
+    <div class="plan-locked premium-offer">
+      <div class="plan-locked-head">🔒 Diagnóstico Estratégico Premium</div>
+      <p class="premium-intro">Tu diagnóstico express ya identificó oportunidades. Ahora, en una <strong>Sesión Estratégica Privada</strong>, transformamos esos hallazgos en un plan de acción real para los próximos 90 días.</p>
+      <ul>
+        <li><span class="ic">✅</span> Prioridades claras de crecimiento</li>
+        <li><span class="ic">✅</span> Automatizaciones con IA aplicables a tu negocio</li>
+        <li><span class="ic">✅</span> Sistema de captación de clientes</li>
+        <li><span class="ic">✅</span> Próximos pasos para escalar</li>
+      </ul>
+      <p class="premium-scarcity">⚠️ Solo abrimos 10 lugares al mes para garantizar atención personalizada.</p>
     </div>
+
+    <button type="button" class="btn btn-primary btn-block" id="diagToAgenda">🚀 Reservar mi lugar</button>
+    <a href="${waLink(waText)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:10px;">
+      O escríbeme directo por WhatsApp
+    </a>
+    <p class="cta-note byaf" style="text-align:center;margin-top:12px;">Tú decides si lo aplicas. Sin compromiso.</p>
   `;
+
+  const toAgenda = $("#diagToAgenda");
+  if (toAgenda) {
+    toAgenda.addEventListener("click", () => {
+      const tab = document.querySelector('#tabs .tab-btn[data-tab="agenda"]');
+      if (tab) tab.click();
+    });
+  }
 }
 
 /* =========================================================

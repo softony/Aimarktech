@@ -80,53 +80,92 @@
         <!-- Entrada -->
         <div class="tool-card">
           <h2>🧠 Diagnóstico Express con IA</h2>
-          <p class="lead">Responde 4 datos sobre tu negocio y recibe al instante un mini-diagnóstico con tu nivel de madurez digital y 3 recomendaciones priorizadas.</p>
+          <p class="lead">Responde unas preguntas guiadas (2 min) y recibe tu nivel de madurez digital y hallazgos clave para crecer. Tú decides si lo aplicas.</p>
+
+          <div class="diag-progress">
+            <div class="diag-progress-bar"><span id="diagBar" style="width:33%"></span></div>
+            <p class="diag-progress-label" id="diagStepLabel">Paso 1 de 3 · Sobre tu negocio</p>
+          </div>
 
           <form id="diagForm">
-            <div class="tfield">
-              <label for="diagNombre">Tu nombre</label>
-              <input type="text" id="diagNombre" name="nombre" placeholder="¿Cómo te llamas?" required />
-            </div>
-
-            <div class="tfield">
-              <label for="diagNegocio">¿A qué se dedica tu negocio?</label>
-              <input type="text" id="diagNegocio" name="negocio" placeholder="Ej. Purificadora, consultorio dental, agencia de seguros…" required />
-            </div>
-
-            <div class="tfield">
-              <label>¿Cuál es tu reto principal hoy?</label>
-              <div class="chip-row" id="diagRetos" data-single="true">
-                <span class="chip" data-value="Consigo pocos clientes nuevos">Pocos clientes nuevos</span>
-                <span class="chip" data-value="Todo depende de mí">Todo depende de mí</span>
-                <span class="chip" data-value="Mi marketing no da resultados medibles">Marketing sin resultados</span>
-                <span class="chip" data-value="No sé cómo usar la IA">No sé usar la IA</span>
-                <span class="chip" data-value="Pierdo tiempo en tareas repetitivas">Tareas repetitivas</span>
-                <span class="chip" data-value="No tengo presencia digital">Sin presencia digital</span>
+            <!-- Paso 1: sobre el negocio -->
+            <div class="diag-step active" data-step="1">
+              <div class="tfield">
+                <label for="diagNombre">Tu nombre</label>
+                <input type="text" id="diagNombre" name="nombre" placeholder="¿Cómo te llamas?" />
+              </div>
+              <div class="tfield">
+                <label for="diagNegocio">¿A qué se dedica tu negocio?</label>
+                <input type="text" id="diagNegocio" name="negocio" placeholder="Ej. Purificadora, consultorio dental, agencia de seguros…" />
               </div>
             </div>
 
-            <div class="tfield">
-              <label for="diagDigital">¿Qué tan digital es tu negocio hoy?</label>
-              <select id="diagDigital" name="digital">
-                <option value="1">Apenas empiezo (no tengo redes ni sistemas)</option>
-                <option value="2">Tengo redes sociales pero sin estrategia</option>
-                <option value="3">Tengo algo de presencia y herramientas básicas</option>
-                <option value="4">Uso varias herramientas pero sin integrar</option>
-                <option value="5">Estoy bastante digitalizado, quiero optimizar</option>
-              </select>
+            <!-- Paso 2: situación actual -->
+            <div class="diag-step" data-step="2">
+              <div class="tfield">
+                <label>¿Cuál es tu reto principal hoy?</label>
+                <div class="chip-row" id="diagRetos" data-single="true">
+                  <span class="chip" data-value="Consigo pocos clientes nuevos">Pocos clientes nuevos</span>
+                  <span class="chip" data-value="Todo depende de mí">Todo depende de mí</span>
+                  <span class="chip" data-value="Mi marketing no da resultados medibles">Marketing sin resultados</span>
+                  <span class="chip" data-value="No sé cómo usar la IA">No sé usar la IA</span>
+                  <span class="chip" data-value="Pierdo tiempo en tareas repetitivas">Tareas repetitivas</span>
+                  <span class="chip" data-value="No tengo presencia digital">Sin presencia digital</span>
+                </div>
+              </div>
+
+              <div class="tfield">
+                <label>¿Cuál es tu objetivo #1 para los próximos 6 meses?</label>
+                <div class="chip-row" id="diagObjetivo" data-single="true">
+                  <span class="chip" data-value="Atraer más clientes">Atraer más clientes</span>
+                  <span class="chip" data-value="Liberar mi tiempo">Liberar mi tiempo</span>
+                  <span class="chip" data-value="Aumentar mis ventas y ticket">Vender más</span>
+                  <span class="chip" data-value="Ordenar y escalar el negocio">Ordenar y escalar</span>
+                  <span class="chip" data-value="Empezar a usar IA">Empezar a usar IA</span>
+                </div>
+              </div>
+
+              <div class="tfield">
+                <label>¿Qué has intentado para crecer?</label>
+                <div class="chip-row" id="diagIntentado" data-single="true">
+                  <span class="chip" data-value="Redes sociales">Redes sociales</span>
+                  <span class="chip" data-value="Publicidad pagada">Publicidad pagada</span>
+                  <span class="chip" data-value="Una página web">Página web</span>
+                  <span class="chip" data-value="Casi nada todavía">Casi nada aún</span>
+                  <span class="chip" data-value="Varias cosas pero sin método">Varias cosas sin método</span>
+                </div>
+              </div>
+
+              <div class="tfield">
+                <label for="diagDigital">¿Qué tan digital es tu negocio hoy?</label>
+                <select id="diagDigital" name="digital">
+                  <option value="1">Apenas empiezo (no tengo redes ni sistemas)</option>
+                  <option value="2">Tengo redes sociales pero sin estrategia</option>
+                  <option value="3">Tengo algo de presencia y herramientas básicas</option>
+                  <option value="4">Uso varias herramientas pero sin integrar</option>
+                  <option value="5">Estoy bastante digitalizado, quiero optimizar</option>
+                </select>
+              </div>
             </div>
 
-            <div class="tfield">
-              <label for="diagContacto">WhatsApp o correo (para enviarte el plan completo)</label>
-              <input type="text" id="diagContacto" name="contacto" placeholder="Opcional, pero recomendado" />
+            <!-- Paso 3: contacto -->
+            <div class="diag-step" data-step="3">
+              <div class="tfield">
+                <label for="diagContacto">¿A dónde te enviamos tu plan? (WhatsApp o correo)</label>
+                <input type="text" id="diagContacto" name="contacto" placeholder="Opcional, pero recomendado para tu plan completo" />
+              </div>
+              <div class="info-note">
+                <span class="ic">🔒</span>
+                <span>Usamos tus datos solo para tu diagnóstico y, si quieres, contactarte. <strong>Tú decides si lo aplicas.</strong> Sin spam.</span>
+              </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">✨ Generar mi diagnóstico</button>
+            <div class="diag-nav">
+              <button type="button" class="btn btn-ghost" id="diagPrev" hidden>← Atrás</button>
+              <button type="button" class="btn btn-primary" id="diagNext">Siguiente →</button>
+              <button type="submit" class="btn btn-primary" id="diagSubmit" hidden>✨ Generar mi diagnóstico</button>
+            </div>
           </form>
-          <div class="info-note">
-            <span class="ic">🔒</span>
-            <span>Tus datos se usan solo para darte el diagnóstico y, si lo deseas, contactarte. Sin spam.</span>
-          </div>
         </div>
 
         <!-- Resultado -->
@@ -203,8 +242,8 @@
       <div class="tool-grid">
         <!-- Entrada -->
         <div class="tool-card">
-          <h2>📅 Agenda tu sesión de diagnóstico</h2>
-          <p class="lead">Sesión gratuita de 30 minutos. Elige el día y la hora que mejor te queden y confirma; te llevamos directo a WhatsApp para cerrar la cita.</p>
+          <h2>📅 Reserva tu Sesión Estratégica Privada</h2>
+          <p class="lead">Sesión privada de 30 minutos donde convertimos los hallazgos de tu diagnóstico en un plan de acción de 90 días. Elige día y hora; confirmamos por WhatsApp. Cupo limitado: solo 10 al mes.</p>
 
           <form id="agendaForm">
             <div class="tfield">
