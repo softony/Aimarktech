@@ -323,7 +323,7 @@ function renderDiagnostico(out, d, payload) {
     `Hola Aimarktech, soy ${payload.nombre} (${payload.negocio}).\n` +
     `Hice el Diagnóstico Express: ${d.score}/100 — ${d.nivel}.\n` +
     `Mi reto: ${payload.reto}. Mi objetivo: ${payload.objetivo}.\n` +
-    `Quiero mi plan completo de 90 días.`;
+    `Quiero reservar mi lugar para la Sesión Estratégica Privada.`;
 
   out.innerHTML = `
     <div class="diag-score">
@@ -344,18 +344,19 @@ function renderDiagnostico(out, d, payload) {
       <ul class="diag-list pillars">${recs}</ul>
     </div>
 
-    <div class="plan-locked">
-      <div class="plan-locked-head">🔒 Tu plan completo (lo armamos en tu sesión gratuita)</div>
+    <div class="plan-locked premium-offer">
+      <div class="plan-locked-head">🔒 Diagnóstico Estratégico Premium</div>
+      <p class="premium-intro">Tu diagnóstico express ya identificó oportunidades. Ahora, en una <strong>Sesión Estratégica Privada</strong>, transformamos esos hallazgos en un plan de acción real para los próximos 90 días.</p>
       <ul>
-        <li><span class="ic">🗺️</span> Hoja de ruta de 90 días, paso a paso para tu negocio</li>
-        <li><span class="ic">🎯</span> Priorización por impacto vs. esfuerzo (qué hacer primero)</li>
-        <li><span class="ic">🤖</span> Tu primer caso de IA, listo para implementar</li>
-        <li><span class="ic">📊</span> Estimación de retorno y métricas a seguir</li>
+        <li><span class="ic">✅</span> Prioridades claras de crecimiento</li>
+        <li><span class="ic">✅</span> Automatizaciones con IA aplicables a tu negocio</li>
+        <li><span class="ic">✅</span> Sistema de captación de clientes</li>
+        <li><span class="ic">✅</span> Próximos pasos para escalar</li>
       </ul>
+      <p class="premium-scarcity">⚠️ Solo abrimos 10 lugares al mes para garantizar atención personalizada.</p>
     </div>
 
-    <p class="diag-progress-label" style="text-align:center;margin:4px 0 12px;">🔒 Solo tomo 10 sesiones completas al mes.</p>
-    <button type="button" class="btn btn-primary btn-block" id="diagToAgenda">📅 Agendar mi sesión completa (gratis)</button>
+    <button type="button" class="btn btn-primary btn-block" id="diagToAgenda">🚀 Reservar mi lugar</button>
     <a href="${waLink(waText)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:10px;">
       O escríbeme directo por WhatsApp
     </a>

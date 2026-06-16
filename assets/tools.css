@@ -432,3 +432,34 @@
   .cta-final-actions { flex-direction: column; }
   .cta-final-actions .btn { width: 100%; }
 }
+
+
+/* =========================================================
+   FIX: el atributo [hidden] debe ocultar SIEMPRE (las clases
+   .btn con display:inline-flex lo estaban anulando). Esto
+   corrige el botón "Siguiente" visible en el paso final.
+   ========================================================= */
+[hidden] { display: none !important; }
+
+/* ---------- Oferta Premium (en el resultado del diagnóstico) ---------- */
+.premium-offer .premium-intro {
+  position: relative;
+  z-index: 1;
+  color: #dbe6f2;
+  font-size: .97rem;
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+.premium-offer .premium-intro strong { color: #fff; }
+.premium-offer .premium-scarcity {
+  position: relative;
+  z-index: 1;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, .12);
+  color: #ffd84d;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: .9rem;
+  line-height: 1.45;
+}
