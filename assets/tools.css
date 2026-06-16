@@ -608,3 +608,22 @@
   .stats-strip { grid-template-columns: repeat(2, 1fr); }
   .testi-grid { grid-template-columns: 1fr; }
 }
+
+
+/* ---------- Interruptor "Imagen con IA" (Kie AI) ---------- */
+.ai-toggle {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  cursor: pointer;
+  background: rgba(0, 194, 255, .07);
+  border: 1.5px solid rgba(0, 194, 255, .35);
+  border-radius: 12px;
+  padding: 13px 15px;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: .95rem;
+  color: var(--ink);
+}
+.ai-toggle input { width: 18px; height: 18px; accent-color: var(--blue); flex: none; }
+.ai-toggle small { color: var(--ink-soft); font-weight: 400; }

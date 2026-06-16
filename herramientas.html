@@ -217,11 +217,23 @@
               </div>
             </div>
 
+            <div class="tfield" id="postAIField" hidden>
+              <label class="ai-toggle">
+                <input type="checkbox" id="postUseAI" />
+                <span>🖼️ Generar imagen con IA <small>(Kie AI · Nano Banana 2)</small></span>
+              </label>
+              <div class="tfield" id="postPromptField" hidden style="margin-top:12px;">
+                <label for="postPrompt">Describe la imagen (opcional)</label>
+                <input type="text" id="postPrompt" placeholder="Ej. café humeante sobre mesa de madera, luz cálida" />
+                <span class="hint">Si lo dejas vacío, la IA se basa en tu producto o promoción.</span>
+              </div>
+            </div>
+
             <button type="submit" class="btn btn-primary btn-block">✨ Generar publicación</button>
           </form>
           <div class="info-note">
             <span class="ic">💡</span>
-            <span>La imagen se genera con los colores de tu marca. Conectando una API de imágenes (Kie AI / Nano Banana) se pueden generar fotos con IA reales.</span>
+            <span>Por defecto la imagen se compone con los colores de tu marca. Si activas <strong>Kie AI</strong>, la IA genera una foto real y le superponemos tu texto y marca.</span>
           </div>
         </div>
 
