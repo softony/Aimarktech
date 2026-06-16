@@ -26,7 +26,8 @@ const BRAND = {
   white: "#ffffff",
 };
 
-let AI_LIVE = false; // true cuando la función serverless tiene API key
+let AI_LIVE = false;  // true cuando la función de texto (OpenAI/Anthropic) tiene API key
+let KIE_LIVE = false; // true cuando Kie AI (imágenes) está configurado
 
 /* ============ Utilidades generales ============ */
 const $ = (sel, ctx = document) => ctx.querySelector(sel);
@@ -92,6 +93,20 @@ async function checkAIStatus() {
   } catch (e) { /* modo local */ }
 }
 
+/* Comprueba si Kie AI (imágenes) está conectado para mostrar la opción */
+async function checkKieStatus() {
+  try {
+    const res = await fetch("/.netlify/functions/kie-image", { method: "GET" });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data && data.configured) {
+      KIE_LIVE = true;
+      const field = $("#postAIField");
+      if (field) field.hidden = false;
+    }
+  } catch (e) { /* Kie no configurado: queda el modo de marca */ }
+}
+
 /* ============ Inicialización común ============ */
 document.addEventListener("DOMContentLoaded", () => {
   // Año del footer
@@ -127,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Estado de la IA
   checkAIStatus();
+  checkKieStatus();
 });
 
 /* ============ Pestañas ============ */
@@ -379,12 +395,21 @@ function initPosts() {
   const form = $("#postForm");
   if (!form) return;
 
+  // Mostrar/ocultar el campo de descripción según el interruptor
+  const useAIChk = $("#postUseAI");
+  const promptField = $("#postPromptField");
+  if (useAIChk && promptField) {
+    useAIChk.addEventListener("change", () => { promptField.hidden = !useAIChk.checked; });
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const negocio = $("#postNegocio").value.trim();
     const producto = $("#postProducto").value.trim();
     const tono = getChip("postTono") || "motivador";
     const formato = getChip("postFormato") || "square";
+    const useAI = !!(useAIChk && useAIChk.checked && KIE_LIVE);
+    const imgPrompt = $("#postPrompt") ? $("#postPrompt").value.trim() : "";
 
     if (!negocio || !producto) {
       alert("Escribe el nombre de tu negocio y la promoción o producto.");
@@ -394,21 +419,60 @@ function initPosts() {
     const out = $("#postResult");
     out.innerHTML = thinkingHTML("Creando tu publicación con IA…");
 
-    const payload = { negocio, producto, tono, formato };
+    const payload = { negocio, producto, tono, formato, prompt: imgPrompt };
 
+    // 1) Texto del post (IA real o local)
     let result = await callAI("post", payload);
     if (!result || !result.post) {
       result = { post: localPost(payload) };
     }
 
-    renderPost(out, result.post, payload);
+    // 2) Imagen con IA (Kie AI), solo si se activó
+    let bgDataUrl = null;
+    if (useAI) {
+      out.innerHTML = thinkingHTML("Generando imagen con IA… puede tardar ~30-40s ⏳");
+      bgDataUrl = await generateKieImage(payload, out);
+    }
+
+    renderPost(out, result.post, payload, bgDataUrl);
 
     saveLead({
       tipo: "Post generado",
       nombre: negocio, negocio,
-      detalle: `Promo: ${producto} · Tono: ${tono} · ${formato}`,
+      detalle: `Promo: ${producto} · Tono: ${tono} · ${formato}${useAI ? " · imagen IA" : ""}`,
     });
   });
+}
+
+/* Genera una imagen con Kie AI: crea la tarea y sondea hasta que termina.
+   Devuelve un data URL (base64) o null si falla / no está configurado. */
+async function generateKieImage(payload, out) {
+  try {
+    const res = await fetch("/.netlify/functions/kie-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (!data || !data.taskId) return null;
+
+    const taskId = data.taskId;
+    const started = Date.now();
+    while (Date.now() - started < 90000) { // hasta 90s
+      await sleep(3000);
+      const sRes = await fetch(`/.netlify/functions/kie-image?taskId=${encodeURIComponent(taskId)}`);
+      const s = await sRes.json();
+      if (s.state === "success" && s.image) return s.image;
+      if (s.state === "fail") return null;
+      if (out) {
+        const pct = s.progress ? ` (${s.progress}%)` : "";
+        out.innerHTML = thinkingHTML(`Generando imagen con IA…${pct} ⏳`);
+      }
+    }
+    return null; // tiempo agotado
+  } catch (e) {
+    return null;
+  }
 }
 
 function localPost({ negocio, producto, tono }) {
@@ -440,7 +504,7 @@ function localPost({ negocio, producto, tono }) {
   return { headline, caption, hashtags, cta: "Agenda hoy" };
 }
 
-function renderPost(out, post, payload) {
+function renderPost(out, post, payload, bgDataUrl) {
   out.innerHTML = `
     <div class="post-preview">
       <div class="post-canvas-wrap"><canvas id="postCanvas"></canvas></div>
@@ -469,7 +533,7 @@ function renderPost(out, post, payload) {
   captionEl.appendChild(tags);
 
   const canvas = $("#postCanvas");
-  drawPostImage(canvas, post, payload);
+  drawPostImage(canvas, post, payload, bgDataUrl);
 
   $("#btnDownload").addEventListener("click", () => {
     const a = document.createElement("a");
@@ -487,28 +551,49 @@ function renderPost(out, post, payload) {
   });
 }
 
-/* Dibuja la imagen del post con la marca Aimarktech */
-function drawPostImage(canvas, post, payload) {
+/* Dibuja la imagen del post. Si hay bgDataUrl (imagen IA), la usa de
+   fondo con una capa oscura; si no, usa el gradiente de marca. */
+function drawPostImage(canvas, post, payload, bgDataUrl) {
+  if (bgDataUrl) {
+    const img = new Image();
+    img.onload = () => paintPost(canvas, post, payload, img);
+    img.onerror = () => paintPost(canvas, post, payload, null);
+    img.src = bgDataUrl;
+  } else {
+    paintPost(canvas, post, payload, null);
+  }
+}
+
+function paintPost(canvas, post, payload, bgImg) {
   const isStory = payload.formato === "story";
   const W = 1080, H = isStory ? 1920 : 1080;
   canvas.width = W; canvas.height = H;
   const ctx = canvas.getContext("2d");
 
-  // Fondo: gradiente diagonal de marca
-  const g = ctx.createLinearGradient(0, 0, W, H);
-  g.addColorStop(0, BRAND.dark);
-  g.addColorStop(0.55, BRAND.blue);
-  g.addColorStop(1, BRAND.cyan);
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, H);
-
-  // Círculos decorativos (glow)
-  drawGlow(ctx, W * 0.85, H * 0.12, 360, "rgba(0,194,255,0.35)");
-  drawGlow(ctx, W * 0.1, H * 0.9, 420, "rgba(10,116,218,0.4)");
-  drawGlow(ctx, W * 0.9, H * 0.85, 200, "rgba(255,206,0,0.18)");
+  if (bgImg) {
+    // Imagen de IA tipo "cover" + capa oscura para legibilidad del texto
+    drawCover(ctx, bgImg, W, H);
+    const ov = ctx.createLinearGradient(0, 0, 0, H);
+    ov.addColorStop(0, "rgba(7,20,38,0.30)");
+    ov.addColorStop(0.5, "rgba(7,20,38,0.55)");
+    ov.addColorStop(1, "rgba(7,20,38,0.90)");
+    ctx.fillStyle = ov;
+    ctx.fillRect(0, 0, W, H);
+  } else {
+    // Fondo: gradiente diagonal de marca
+    const g = ctx.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, BRAND.dark);
+    g.addColorStop(0.55, BRAND.blue);
+    g.addColorStop(1, BRAND.cyan);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    // Círculos decorativos (glow)
+    drawGlow(ctx, W * 0.85, H * 0.12, 360, "rgba(0,194,255,0.35)");
+    drawGlow(ctx, W * 0.1, H * 0.9, 420, "rgba(10,116,218,0.4)");
+    drawGlow(ctx, W * 0.9, H * 0.85, 200, "rgba(255,206,0,0.18)");
+  }
 
   const pad = 90;
-  const cy = H / 2;
 
   // Nombre del negocio (arriba)
   ctx.fillStyle = "rgba(255,255,255,0.92)";
@@ -564,6 +649,16 @@ function drawPostImage(canvas, post, payload) {
   ctx.fillStyle = "rgba(255,255,255,0.8)";
   ctx.font = "700 26px Montserrat, sans-serif";
   ctx.fillText(`✨ Generado con IA · ${CONFIG.brand}`, pad, H - pad + 20);
+}
+
+/* Dibuja una imagen cubriendo todo el lienzo (object-fit: cover) */
+function drawCover(ctx, img, W, H) {
+  const ir = img.width / img.height;
+  const cr = W / H;
+  let dw, dh, dx, dy;
+  if (ir > cr) { dh = H; dw = H * ir; dx = (W - dw) / 2; dy = 0; }
+  else { dw = W; dh = W / ir; dx = 0; dy = (H - dh) / 2; }
+  ctx.drawImage(img, dx, dy, dw, dh);
 }
 
 function captionFirstLine(caption) {
@@ -669,6 +764,8 @@ function initAgenda() {
 function thinkingHTML(msg) {
   return `<div class="result-empty"><div class="thinking"><span class="spinner"></span>${escapeHTML(msg)}</div></div>`;
 }
+
+function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
 
 function wrapText(ctx, text, maxWidth) {
   const words = (text || "").split(" ");
