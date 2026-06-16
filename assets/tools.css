@@ -463,3 +463,76 @@
   font-size: .9rem;
   line-height: 1.45;
 }
+
+
+/* =========================================================
+   HOME: DIAGNÓSTICO PROTAGONISTA + URGENCIA + CIERRE
+   ========================================================= */
+
+/* ---------- Banda del diagnóstico (protagonista, arriba) ---------- */
+.diag-band { padding: clamp(40px, 6vw, 72px) 0; }
+.diag-band-box {
+  display: grid;
+  grid-template-columns: 1.25fr .75fr;
+  gap: 34px;
+  align-items: center;
+  background:
+    radial-gradient(520px 360px at 88% -20%, rgba(0, 194, 255, .28), transparent 60%),
+    var(--bg-dark);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: clamp(28px, 4vw, 52px);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.diag-band-text { position: relative; z-index: 1; }
+.diag-band-text .eyebrow { color: var(--cyan); }
+.diag-band-text h2 {
+  color: #fff;
+  font-size: clamp(1.5rem, 3.3vw, 2.3rem);
+  line-height: 1.15;
+  margin: 8px 0 20px;
+}
+.diag-band-list { list-style: none; display: grid; gap: 11px; margin-bottom: 26px; }
+.diag-band-list li {
+  color: #dbe6f2;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1rem;
+}
+.diag-band-art { position: relative; z-index: 1; display: grid; place-items: center; }
+.diag-band-ring {
+  width: 170px; height: 170px; border-radius: 50%;
+  background: conic-gradient(var(--cyan) 75%, rgba(255, 255, 255, .14) 0);
+  display: grid; place-content: center; position: relative; text-align: center;
+}
+.diag-band-ring::after { content: ""; position: absolute; inset: 13px; border-radius: 50%; background: var(--bg-dark); }
+.diag-band-ring .ring-emoji { position: relative; z-index: 1; font-size: 3rem; }
+.diag-band-ring .ring-label { position: relative; z-index: 1; display: block; margin-top: 4px; font-size: .82rem; color: #9fb3c8; font-weight: 700; font-family: var(--font-head); }
+@media (max-width: 760px) {
+  .diag-band-box { grid-template-columns: 1fr; }
+  .diag-band-art { display: none; }
+}
+
+/* ---------- Sección de urgencia (costo de no actuar) ---------- */
+.urgencia { background: var(--bg-soft); }
+.urgencia-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.urg-item {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 4px solid #e23b3b;
+  border-radius: 14px;
+  padding: 18px 20px;
+  font-weight: 600;
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+}
+.urgencia-cta { text-align: center; margin-top: 30px; }
+@media (max-width: 640px) { .urgencia-grid { grid-template-columns: 1fr; } }
