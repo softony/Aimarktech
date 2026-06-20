@@ -14,42 +14,99 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="assets/tools.css" />
   <style>
-    .admin-wrap { width: min(1100px, 92%); margin: 40px auto; }
-    .admin-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
-    .admin-head h1 { font-size: 1.7rem; font-weight: 900; }
-    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    body { background: var(--bg-soft); }
+    .admin-wrap { width: min(1180px, 94%); margin: 36px auto 60px; }
+    .admin-head { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 8px; }
+    .admin-head h1 { font-size: 1.7rem; font-weight: 900; display: flex; align-items: center; gap: 10px; }
+    .admin-head .sub { color: var(--ink-soft); font-size: .95rem; margin-top: 2px; }
+    .mode-badge { font-size: .84rem; margin-top: 8px; font-weight: 700; }
+    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; }
+    .toolbar .btn { padding: 9px 16px; font-size: .9rem; }
+
+    /* ---- KPIs ---- */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 24px 0 14px; }
     .stat {
-      background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 22px;
-      box-shadow: var(--shadow-sm);
+      background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px;
+      box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
     }
-    .stat .num { font-family: var(--font-head); font-weight: 900; font-size: 2rem; color: var(--blue); }
-    .stat .lbl { color: var(--ink-soft); font-size: .9rem; font-weight: 700; }
-    .toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .stat::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--grad); }
+    .stat.is-star::before { background: linear-gradient(180deg, var(--green), var(--cyan)); }
+    .stat .num { font-family: var(--font-head); font-weight: 900; font-size: 2rem; color: var(--ink); line-height: 1.1; }
+    .stat.is-star .num { color: var(--green); }
+    .stat .lbl { color: var(--ink-soft); font-size: .86rem; font-weight: 700; margin-top: 2px; }
+
+    /* ---- Insights secundarios ---- */
+    .insights { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 22px; }
+    .insight { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow-sm); }
+    .insight .ico { font-size: 1.2rem; }
+    .insight .v { font-family: var(--font-head); font-weight: 800; font-size: 1.15rem; color: var(--ink); margin-top: 4px; }
+    .insight .k { color: var(--ink-soft); font-size: .82rem; font-weight: 700; }
+
+    /* ---- Gráfica de tendencia ---- */
+    .panel-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; box-shadow: var(--shadow-sm); margin-bottom: 22px; }
+    .panel-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
+    .panel-card .muted { color: var(--ink-soft); font-size: .85rem; margin-bottom: 16px; }
+    .trend { display: flex; align-items: flex-end; gap: 6px; height: 110px; }
+    .trend .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+    .trend .bar { width: 100%; max-width: 26px; min-height: 3px; border-radius: 6px 6px 0 0; background: var(--grad); transition: height .4s ease; }
+    .trend .bar.zero { background: var(--line); }
+    .trend .d { font-size: .66rem; color: var(--ink-soft); font-weight: 700; }
+
+    /* ---- Controles ---- */
+    .controls { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tabs { display: inline-flex; background: #fff; border: 1px solid var(--line); border-radius: 50px; padding: 4px; gap: 2px; }
+    .tab { border: none; background: transparent; padding: 8px 16px; border-radius: 50px; font-family: var(--font-head); font-weight: 800; font-size: .85rem; color: var(--ink-soft); cursor: pointer; transition: all .15s; }
+    .tab.active { background: var(--grad); color: #fff; }
+    .controls .spacer { flex: 1; }
+    .ctrl-input, .ctrl-select { padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; font-family: var(--font-body); font-size: .9rem; background: #fff; color: var(--ink); }
+    .ctrl-input { min-width: 220px; }
+
+    /* ---- Tabla ---- */
     .lead-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-sm); }
-    .lead-table th, .lead-table td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--line); font-size: .92rem; vertical-align: top; }
-    .lead-table th { background: var(--bg-soft); font-family: var(--font-head); font-weight: 800; color: var(--ink); }
+    .lead-table th, .lead-table td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--line); font-size: .92rem; vertical-align: top; }
+    .lead-table th { background: var(--bg-soft); font-family: var(--font-head); font-weight: 800; color: var(--ink); white-space: nowrap; }
     .lead-table tr:last-child td { border-bottom: none; }
-    .badge { display: inline-block; padding: 4px 11px; border-radius: 50px; font-size: .78rem; font-weight: 800; font-family: var(--font-head); }
+    .lead-table tbody tr { transition: background .12s; }
+    .lead-table tbody tr:hover { background: var(--bg-soft); }
+    .badge { display: inline-block; padding: 4px 11px; border-radius: 50px; font-size: .78rem; font-weight: 800; font-family: var(--font-head); white-space: nowrap; }
     .b-diag { background: rgba(10,116,218,.12); color: var(--blue); }
     .b-post { background: rgba(255,206,0,.18); color: #9a7b00; }
     .b-cita { background: rgba(40,167,69,.14); color: #1c7a33; }
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--ink-soft); }
+    .score-pill { display: inline-block; padding: 2px 9px; border-radius: 50px; font-size: .74rem; font-weight: 800; font-family: var(--font-head); margin-left: 6px; }
+    .score-hi { background: rgba(40,167,69,.16); color: #1c7a33; }
+    .score-mid { background: rgba(255,206,0,.20); color: #9a7b00; }
+    .score-lo { background: rgba(220,53,69,.14); color: #c02a39; }
+    .row-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .mini-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 8px; border: 1px solid var(--line); background: #fff; font-size: .78rem; font-weight: 700; font-family: var(--font-head); cursor: pointer; text-decoration: none; color: var(--ink); transition: all .12s; }
+    .mini-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .mini-btn.wa:hover { border-color: var(--green); color: #1c7a33; }
+    .contact-val { font-weight: 700; }
+    .empty-state { text-align: center; padding: 56px 20px; color: var(--ink-soft); background: #fff; border: 1px solid var(--line); border-radius: 16px; }
     .empty-state .big { font-size: 3rem; display: block; margin-bottom: 12px; }
+
+    /* ---- Login ---- */
     .login-box { max-width: 400px; margin: 80px auto; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 36px; box-shadow: var(--shadow-md); text-align: center; }
     .login-box img { width: 56px; margin-bottom: 16px; }
     .login-box h1 { font-size: 1.4rem; margin-bottom: 6px; }
     .login-box p { color: var(--ink-soft); margin-bottom: 22px; font-size: .95rem; }
     .hidden { display: none !important; }
-    .note-card { background: var(--bg-soft); border: 1px dashed var(--blue); border-radius: 14px; padding: 18px; margin-top: 28px; font-size: .92rem; color: var(--ink-soft); }
+    .note-card { background: #fff; border: 1px dashed var(--blue); border-radius: 14px; padding: 18px; margin-top: 26px; font-size: .9rem; color: var(--ink-soft); }
     .note-card strong { color: var(--ink); }
-    .note-card code { background: #fff; border: 1px solid var(--line); padding: 2px 7px; border-radius: 6px; font-size: .85rem; }
-    @media (max-width: 760px) {
+    .note-card code { background: var(--bg-soft); border: 1px solid var(--line); padding: 2px 7px; border-radius: 6px; font-size: .85rem; }
+    .toast { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 50px; font-weight: 700; font-size: .9rem; opacity: 0; pointer-events: none; transition: all .25s; z-index: 99; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 900px) {
       .stats { grid-template-columns: repeat(2, 1fr); }
+      .insights { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .controls .ctrl-input { min-width: 0; flex: 1; }
       .lead-table thead { display: none; }
       .lead-table, .lead-table tbody, .lead-table tr, .lead-table td { display: block; width: 100%; }
       .lead-table tr { border-bottom: 8px solid var(--bg-soft); }
       .lead-table td { border: none; padding: 6px 16px; }
-      .lead-table td::before { content: attr(data-l); font-weight: 800; font-family: var(--font-head); color: var(--ink-soft); display: block; font-size: .78rem; }
+      .lead-table td::before { content: attr(data-l); font-weight: 800; font-family: var(--font-head); color: var(--ink-soft); display: block; font-size: .76rem; }
     }
   </style>
 </head>
@@ -73,31 +130,57 @@
   <div id="panel" class="admin-wrap hidden">
     <div class="admin-head">
       <div>
-        <h1>📊 Panel de prospectos</h1>
-        <p style="color:var(--ink-soft);">Diagnósticos, posts y citas capturados desde tus herramientas.</p>
+        <h1>📊 Dashboard</h1>
+        <p class="sub">Tu centro de control: prospectos, actividad y métricas de Aimarktech.</p>
+        <p class="mode-badge" id="modeBadge"></p>
       </div>
       <div class="toolbar">
-        <a href="herramientas.html" class="btn btn-ghost">← Ver herramientas</a>
-        <button class="btn btn-ghost" id="btnExport">⬇️ Exportar CSV</button>
-        <button class="btn btn-ghost" id="btnClear">🗑️ Vaciar</button>
+        <a href="herramientas.html" class="btn btn-ghost">← Herramientas</a>
+        <button class="btn btn-ghost" id="btnExport">⬇️ Exportar</button>
         <button class="btn btn-primary" id="btnLogout">Salir</button>
       </div>
     </div>
 
+    <!-- KPIs -->
     <div class="stats" id="stats"></div>
+
+    <!-- Insights -->
+    <div class="insights" id="insights"></div>
+
+    <!-- Tendencia -->
+    <div class="panel-card" id="trendCard">
+      <h3>📈 Actividad de los últimos 14 días</h3>
+      <p class="muted">Registros nuevos por día (diagnósticos, citas y posts).</p>
+      <div class="trend" id="trend"></div>
+    </div>
+
+    <!-- Controles -->
+    <div class="controls">
+      <div class="tabs" id="tabs">
+        <button class="tab active" data-view="prospectos">👥 Prospectos</button>
+        <button class="tab" data-view="contenido">📱 Contenido</button>
+        <button class="tab" data-view="todo">📋 Todo</button>
+      </div>
+      <div class="spacer"></div>
+      <input type="search" class="ctrl-input" id="search" placeholder="🔎 Buscar por nombre, negocio o detalle…" />
+      <select class="ctrl-select" id="dateFilter">
+        <option value="all">Todo el tiempo</option>
+        <option value="7">Últimos 7 días</option>
+        <option value="30">Últimos 30 días</option>
+      </select>
+    </div>
 
     <div id="leadsContainer"></div>
 
     <div class="note-card">
-      <strong>ℹ️ Cómo funciona este panel.</strong> Tiene dos modos automáticos:
-      <br>• <strong>Modo local</strong> (por defecto): los datos se guardan en este navegador.
-      <br>• <strong>Modo Supabase</strong>: si configuras la base de datos en Netlify
-      (<code>SUPABASE_URL</code>, <code>SUPABASE_SERVICE_KEY</code> y <code>ADMIN_TOKEN</code>),
-      verás aquí los prospectos de <strong>todos los dispositivos</strong>, centralizados.
-      <br>La <strong>IA real</strong> se activa con tu API key (<code>OPENAI_API_KEY</code> o
-      <code>ANTHROPIC_API_KEY</code>). Sin esas variables, todo sigue funcionando en modo local.
+      <strong>ℹ️ Cómo funciona este panel.</strong>
+      <br>• <strong>👥 Prospectos</strong>: personas reales con contacto (diagnósticos y citas). Aquí están tus oportunidades de venta, con botones para escribirles directo.
+      <br>• <strong>📱 Contenido</strong>: registro de los posts que has generado (no llevan contacto porque son una herramienta de creación, no de captura).
+      <br>• <strong>Modos automáticos</strong>: <strong>local</strong> (este navegador) o <strong>Supabase</strong> (centralizado, multi-dispositivo) si configuras <code>SUPABASE_URL</code>, <code>SUPABASE_SERVICE_KEY</code> y <code>ADMIN_TOKEN</code> en Netlify.
     </div>
   </div>
+
+  <div class="toast" id="toast"></div>
 
   <script src="assets/admin.js"></script>
 </body>
