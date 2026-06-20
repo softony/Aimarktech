@@ -406,6 +406,7 @@ function initPosts() {
     e.preventDefault();
     const negocio = $("#postNegocio").value.trim();
     const producto = $("#postProducto").value.trim();
+    const contacto = $("#postContacto") ? $("#postContacto").value.trim() : "";
     const tono = getChip("postTono") || "motivador";
     const formato = getChip("postFormato") || "square";
     const useAI = !!(useAIChk && useAIChk.checked && KIE_LIVE);
@@ -419,7 +420,7 @@ function initPosts() {
     const out = $("#postResult");
     out.innerHTML = thinkingHTML("Creando tu publicación con IA…");
 
-    const payload = { negocio, producto, tono, formato, prompt: imgPrompt };
+    const payload = { negocio, producto, tono, formato, prompt: imgPrompt, contacto };
 
     // 1) Texto del post (IA real o local)
     let result = await callAI("post", payload);
@@ -438,7 +439,7 @@ function initPosts() {
 
     saveLead({
       tipo: "Post generado",
-      nombre: negocio, negocio,
+      nombre: negocio, negocio, contacto,
       detalle: `Promo: ${producto} · Tono: ${tono} · ${formato}${useAI ? " · imagen IA" : ""}`,
     });
   });
@@ -643,6 +644,21 @@ function paintPost(canvas, post, payload, bgImg) {
   ctx.fillStyle = BRAND.dark;
   ctx.textBaseline = "middle";
   ctx.fillText(ctaText, pad + 40, ctaY + ctaH / 2 + 2);
+
+  // Contacto del autor (si lo capturó): se incrusta en el diseño
+  if (payload.contacto) {
+    ctx.textBaseline = "top";
+    ctx.fillStyle = "rgba(255,255,255,0.96)";
+    ctx.font = "700 34px Montserrat, sans-serif";
+    let ct = "📲 " + payload.contacto;
+    let truncated = false;
+    while (ctx.measureText(ct).width > W - pad * 2 && ct.length > 8) {
+      ct = ct.slice(0, -2);
+      truncated = true;
+    }
+    if (truncated) ct += "…";
+    ctx.fillText(ct, pad, ctaY + ctaH + 34);
+  }
 
   // Firma inferior
   ctx.textBaseline = "alphabetic";
