@@ -387,3 +387,79 @@ a { color: inherit; text-decoration: none; }
   .metodo-grid, .serv-grid, .pain-grid, .dif-grid, .footer-inner { grid-template-columns: 1fr; }
   .hero-actions .btn { flex: 1; }
 }
+
+
+
+/* ===================== INTRO ANIMADA ===================== */
+#introOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(900px 600px at 50% 18%, rgba(0,194,255,.22), transparent 60%),
+    radial-gradient(700px 500px at 50% 100%, rgba(40,167,69,.16), transparent 60%),
+    linear-gradient(160deg, #061222, #0a1a2e 55%, #0A74DA);
+  transition: opacity .8s ease, visibility .8s ease;
+}
+/* Visitas repetidas / reduce-motion: no se muestra (sin parpadeo) */
+.intro-seen #introOverlay { display: none; }
+/* Salida del intro */
+#introOverlay.hide { opacity: 0; visibility: hidden; }
+
+#introCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.intro-brand {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 24%;
+  text-align: center;
+  z-index: 2;
+  font-family: var(--font-head);
+  font-weight: 900;
+  letter-spacing: .22em;
+  font-size: clamp(1.1rem, 4.5vw, 2rem);
+  color: #fff;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .8s ease, transform .8s ease;
+  text-shadow: 0 2px 24px rgba(0,194,255,.45);
+}
+#introOverlay.formed .intro-brand { opacity: 1; transform: none; }
+
+.intro-skip {
+  position: absolute;
+  bottom: 26px;
+  right: 26px;
+  z-index: 3;
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.28);
+  padding: 9px 18px;
+  border-radius: 50px;
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: .85rem;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: background .2s ease;
+}
+.intro-skip:hover { background: rgba(255,255,255,.24); }
+
+@media (max-width: 600px) {
+  .intro-brand { bottom: 20%; }
+  .intro-skip { bottom: 18px; right: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #introOverlay { display: none; }
+}
