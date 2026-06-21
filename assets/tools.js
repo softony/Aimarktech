@@ -191,6 +191,42 @@ function getChip(rowId) {
 /* =========================================================
    1) DIAGNÓSTICO EXPRESS
    ========================================================= */
+/* Definición de las 6 dimensiones (orden del radar) */
+const DIM_DEFS = [
+  { key: "mentalidad", row: "dimMentalidad", label: "Mentalidad Empresarial", short: "Mentalidad" },
+  { key: "marketing", row: "dimMarketing", label: "Marketing", short: "Marketing" },
+  { key: "tecnologia", row: "dimTecnologia", label: "Tecnología", short: "Tecnología" },
+  { key: "ia", row: "dimIA", label: "Inteligencia Artificial", short: "IA" },
+  { key: "procesos", row: "dimProcesos", label: "Procesos", short: "Procesos" },
+  { key: "marca", row: "dimMarca", label: "Marca", short: "Marca" },
+];
+
+/* Lee una dimensión (score + etiqueta) del chip seleccionado */
+function getDim(rowId) {
+  const sel = $(`#${rowId} .chip.selected`);
+  if (!sel) return null;
+  return { score: parseInt(sel.dataset.score, 10) || 0, label: sel.dataset.label || sel.textContent.trim() };
+}
+
+function maturityCategory(s) {
+  if (s < 35) return { label: "Inicial", emoji: "🔴", color: "#dc3545" };
+  if (s < 60) return { label: "En Desarrollo", emoji: "🟡", color: "#E0A800" };
+  if (s < 80) return { label: "Escalable", emoji: "🟢", color: "#28A745" };
+  return { label: "Optimizado", emoji: "🔵", color: "#0A74DA" };
+}
+
+function validContacto(v) {
+  v = (v || "").trim();
+  if (v.includes("@")) return /\S+@\S+\.\S+/.test(v);
+  return v.replace(/\D/g, "").length >= 8;
+}
+
+/* Dimensiones ordenadas de mayor a menor (fortalezas / áreas) */
+function rankDims(dims) {
+  return DIM_DEFS.map((d) => ({ label: d.label, short: d.short, score: dims[d.key] || 0 }))
+    .sort((a, b) => b.score - a.score);
+}
+
 function initDiagnostico() {
   const form = $("#diagForm");
   if (!form) return;
@@ -202,7 +238,7 @@ function initDiagnostico() {
   const prevBtn = $("#diagPrev");
   const nextBtn = $("#diagNext");
   const submitBtn = $("#diagSubmit");
-  const titles = ["Sobre tu negocio", "Tu situación actual", "Recibe tu diagnóstico"];
+  const titles = ["Tu negocio", "Cómo operas", "Crecimiento y tecnología", "Recibe tu diagnóstico"];
   let cur = 1;
 
   function show(step) {
@@ -218,13 +254,26 @@ function initDiagnostico() {
   function validateStep(step) {
     if (step === 1) {
       if (!$("#diagNombre").value.trim() || !$("#diagNegocio").value.trim()) {
-        alert("Escribe tu nombre y a qué se dedica tu negocio.");
-        return false;
+        alert("Escribe tu nombre y a qué se dedica tu negocio."); return false;
+      }
+      if (!getChip("diagSituacion") || !getChip("diagClientes") || !getChip("diagInversion")) {
+        alert("Elige una opción en situación, clientes e inversión."); return false;
       }
     }
     if (step === 2) {
-      if (!getChip("diagRetos")) { alert("Elige tu reto principal."); return false; }
-      if (!getChip("diagObjetivo")) { alert("Elige tu objetivo principal."); return false; }
+      if (!getDim("dimMentalidad") || !getDim("dimProcesos") || !getDim("dimMarca")) {
+        alert("Responde las 3 preguntas de este paso."); return false;
+      }
+    }
+    if (step === 3) {
+      if (!getDim("dimMarketing") || !getDim("dimTecnologia") || !getDim("dimIA")) {
+        alert("Responde las 3 preguntas de este paso."); return false;
+      }
+    }
+    if (step === 4) {
+      if (!validContacto($("#diagContacto").value)) {
+        alert("Escribe un correo o teléfono válido para enviarte tu diagnóstico."); return false;
+      }
     }
     return true;
   }
@@ -234,158 +283,304 @@ function initDiagnostico() {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    if (!validateStep(1)) { show(1); return; }
-    if (!validateStep(2)) { show(2); return; }
+    for (let s = 1; s <= total; s++) { if (!validateStep(s)) { show(s); return; } }
+
+    const dims = {};
+    const respuestas = {};
+    DIM_DEFS.forEach((d) => {
+      const g = getDim(d.row);
+      dims[d.key] = g ? g.score : 0;
+      respuestas[d.key] = g ? g.label : "";
+    });
+    const overall = Math.round(DIM_DEFS.reduce((a, d) => a + dims[d.key], 0) / DIM_DEFS.length);
+    const cat = maturityCategory(overall);
 
     const payload = {
       nombre: $("#diagNombre").value.trim(),
       negocio: $("#diagNegocio").value.trim(),
-      reto: getChip("diagRetos"),
-      objetivo: getChip("diagObjetivo"),
-      intentado: getChip("diagIntentado"),
-      digital: parseInt($("#diagDigital").value, 10),
       contacto: $("#diagContacto").value.trim(),
+      situacion: getChip("diagSituacion"),
+      clientes: getChip("diagClientes"),
+      inversion: getChip("diagInversion"),
+      dims, respuestas, overall, categoria: cat.label,
     };
 
     const out = $("#diagResult");
     out.innerHTML = thinkingHTML("Analizando tu negocio con IA…");
 
-    // Intento de IA real; si no, lógica local inteligente
     let result = await callAI("diagnostico", payload);
-    if (!result || !result.diagnostico) {
-      result = { diagnostico: localDiagnostico(payload) };
+    let narr = result && result.diagnostico ? result.diagnostico : null;
+    if (!narr || !Array.isArray(narr.plan30)) {
+      narr = localDiagnostico(payload);
     }
 
-    renderDiagnostico(out, result.diagnostico, payload);
+    renderDiagnostico(out, narr, payload, cat);
 
     saveLead({
       tipo: "Diagnóstico",
       nombre: payload.nombre, negocio: payload.negocio, contacto: payload.contacto,
-      detalle: `Reto: ${payload.reto} · Objetivo: ${payload.objetivo} · Madurez: ${payload.digital}/5 · Puntuación: ${result.diagnostico.score}`,
+      detalle: `Madurez: ${overall}/100 (${cat.label}) · Situación: ${payload.situacion} · Clientes/mes: ${payload.clientes} · Inversión: ${payload.inversion} · Puntuación: ${overall}`,
     });
   });
 
   show(1);
 }
 
-function localDiagnostico({ nombre, negocio, reto, objetivo, digital }) {
-  // Puntuación base por madurez digital + ajuste por reto
-  const base = [0, 22, 38, 55, 70, 84][digital] || 40;
-  const jitter = Math.floor(Math.random() * 8);
-  const score = Math.max(15, Math.min(92, base + jitter));
+/* Dibuja el radar de 6 dimensiones (sin librerías) */
+function drawRadar(canvas, dims) {
+  const order = DIM_DEFS, N = order.length, size = 320;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  canvas.width = size * dpr; canvas.height = size * dpr;
+  const ctx = canvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, size, size);
+  const cx = size / 2, cy = size / 2 + 4, R = size * 0.32;
 
-  let nivel, resumen;
-  if (score < 40) {
-    nivel = "Etapa de despegue";
-    resumen = "Tienes una gran oportunidad por delante: con bases sólidas puedes crecer rápido y ordenado.";
-  } else if (score < 65) {
-    nivel = "En crecimiento";
-    resumen = "Ya tienes avances, pero te falta estrategia e integración para que todo trabaje junto.";
-  } else {
-    nivel = "Madurez avanzada";
-    resumen = "Vas muy bien. Ahora toca optimizar, automatizar con IA y escalar lo que ya funciona.";
+  for (let g = 1; g <= 4; g++) {
+    const rr = (R * g) / 4;
+    ctx.beginPath();
+    for (let i = 0; i < N; i++) {
+      const a = -Math.PI / 2 + (i * 2 * Math.PI) / N;
+      const x = cx + Math.cos(a) * rr, y = cy + Math.sin(a) * rr;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = "rgba(10,116,218,0.12)"; ctx.lineWidth = 1; ctx.stroke();
   }
 
-  // Recomendaciones según los 3 pilares de Aimarktech, adaptadas al reto
-  const retoMap = {
-    "Consigo pocos clientes nuevos": {
-      crecimiento: `Diseña un embudo simple para ${negocio}: una oferta gancho + campaña medible para atraer clientes nuevos cada semana.`,
-      tech: `Implementa un asistente con IA que responda dudas y agende citas 24/7, para no perder clientes por no contestar a tiempo.`,
-    },
-    "Todo depende de mí": {
-      crecimiento: `Documenta tus 3 procesos clave de ${negocio} para poder delegarlos y dejar de ser el cuello de botella.`,
-      tech: `Automatiza tareas repetitivas (respuestas, recordatorios, reportes) con IA para liberar varias horas a la semana.`,
-    },
-    "Mi marketing no da resultados medibles": {
-      crecimiento: `Define 2-3 métricas clave (costo por cliente, retorno por peso invertido) y mide cada campaña antes de invertir más.`,
-      tech: `Centraliza tus datos en un tablero simple para ver qué canal te trae clientes reales, no solo "likes".`,
-    },
-    "No sé cómo usar la IA": {
-      crecimiento: `Empieza con un caso de uso de alto impacto en ${negocio}: contenido para redes o atención automatizada.`,
-      tech: `Conecta una IA a tu negocio para generar publicaciones, responder mensajes y crear materiales en minutos.`,
-    },
-    "Pierdo tiempo en tareas repetitivas": {
-      crecimiento: `Haz una lista de tus tareas semanales y marca las repetitivas: ahí está tu mayor ahorro de tiempo.`,
-      tech: `Automatiza esas tareas con flujos de IA (mensajes, agendas, generación de contenido) para recuperar tu tiempo.`,
-    },
-    "No tengo presencia digital": {
-      crecimiento: `Crea una presencia mínima viable: perfil profesional + 1 canal donde estén tus clientes + oferta clara.`,
-      tech: `Usa IA para generar tu contenido inicial y un sitio o catálogo digital sin complicarte con lo técnico.`,
-    },
-  };
-  const r = retoMap[reto] || retoMap["No sé cómo usar la IA"];
+  ctx.fillStyle = "#46566b"; ctx.font = "700 11px Montserrat, sans-serif";
+  for (let i = 0; i < N; i++) {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / N;
+    const x = cx + Math.cos(a) * R, y = cy + Math.sin(a) * R;
+    ctx.strokeStyle = "rgba(10,116,218,0.12)"; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.stroke();
+    const lx = cx + Math.cos(a) * (R + 16), ly = cy + Math.sin(a) * (R + 16);
+    ctx.textAlign = Math.abs(Math.cos(a)) < 0.3 ? "center" : (Math.cos(a) > 0 ? "left" : "right");
+    ctx.textBaseline = "middle";
+    ctx.fillText(order[i].short, lx, ly);
+  }
 
-  const recomendaciones = [
-    { pilar: "🧠 Mentalidad", txt: `Define una meta clara${objetivo ? ` ("${objetivo.toLowerCase()}")` : ""} para ${negocio} y bloquea tiempo cada semana para trabajar EN el negocio, no solo EN la operación.` },
-    { pilar: "🤖 Tecnología & IA", txt: r.tech },
-    { pilar: "📈 Crecimiento", txt: r.crecimiento },
-  ];
-
-  // Fortaleza y foco
-  const fortaleza = digital >= 4
-    ? "Ya tienes herramientas y presencia: tu base técnica es una ventaja."
-    : "Tienes intención de crecer y claridad de tu reto principal: ese es el primer paso.";
-  const foco = reto;
-
-  return { score, nivel, resumen, recomendaciones, fortaleza, foco, nombre, negocio };
+  ctx.beginPath();
+  for (let i = 0; i < N; i++) {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / N;
+    const v = (dims[order[i].key] || 0) / 100;
+    const x = cx + Math.cos(a) * R * v, y = cy + Math.sin(a) * R * v;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fillStyle = "rgba(0,194,255,0.25)"; ctx.fill();
+  ctx.strokeStyle = "#0A74DA"; ctx.lineWidth = 2; ctx.stroke();
+  for (let i = 0; i < N; i++) {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / N;
+    const v = (dims[order[i].key] || 0) / 100;
+    const x = cx + Math.cos(a) * R * v, y = cy + Math.sin(a) * R * v;
+    ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fillStyle = "#0A74DA"; ctx.fill();
+  }
 }
 
-function renderDiagnostico(out, d, payload) {
-  const recs = d.recomendaciones.map(
-    (r) => `<li><span class="ic">${r.pilar.split(" ")[0]}</span><div><strong>${escapeHTML(r.pilar.replace(/^\S+\s/, ""))}:</strong> ${escapeHTML(r.txt)}</div></li>`
-  ).join("");
+/* Genera y descarga el diagnóstico en PDF (usa jsPDF si está disponible) */
+function buildDiagnosticoPDF(d, payload, cat) {
+  const Ctor = window.jspdf && window.jspdf.jsPDF;
+  if (!Ctor) { alert("No se pudo cargar el generador de PDF. Revisa tu conexión e inténtalo de nuevo."); return; }
+  const doc = new Ctor({ unit: "pt", format: "a4" });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const M = 48;
+  let y = 0;
+  const ensure = (need) => { if (y + need > H - 60) { doc.addPage(); y = 60; } };
+
+  doc.setFillColor(7, 20, 38); doc.rect(0, 0, W, 90, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFont("helvetica", "bold"); doc.setFontSize(20); doc.text("AIMARKTECH", M, 42);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(12);
+  doc.text("Diagnostico Estrategico Empresarial", M, 64);
+  doc.setFontSize(9);
+  doc.text(new Date().toLocaleDateString("es-MX", { day: "2-digit", month: "long", year: "numeric" }), W - M, 64, { align: "right" });
+
+  y = 122; doc.setTextColor(20, 27, 44); doc.setFont("helvetica", "bold"); doc.setFontSize(13);
+  doc.text(String(payload.nombre || ""), M, y);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(11); doc.setTextColor(70, 86, 107);
+  y += 16; doc.text(`Negocio: ${payload.negocio || "-"}`, M, y);
+  y += 14; doc.text(`Contacto: ${payload.contacto || "-"}`, M, y);
+
+  y += 28; doc.setTextColor(10, 116, 218); doc.setFont("helvetica", "bold"); doc.setFontSize(15);
+  doc.text(`Nivel de Madurez: ${payload.overall}/100  -  ${cat.label}`, M, y);
+
+  const radar = document.getElementById("diagRadar");
+  if (radar) { try { doc.addImage(radar.toDataURL("image/png"), "PNG", W - M - 170, y - 4, 170, 170); } catch (e) {} }
+
+  y += 22; doc.setTextColor(20, 27, 44); doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+  doc.text("Puntuacion por area:", M, y);
+  doc.setFont("helvetica", "normal"); doc.setTextColor(70, 86, 107); doc.setFontSize(10);
+  DIM_DEFS.forEach((dm) => { y += 15; doc.text(`- ${dm.label}: ${payload.dims[dm.key] || 0}/100`, M, y); });
+
+  const sections = [
+    ["Resumen ejecutivo", [d.resumen]],
+    ["Principales obstaculos", d.obstaculos],
+    ["Oportunidades de crecimiento", d.oportunidades],
+    ["Recomendaciones de IA y tecnologia", d.recomendaciones],
+    ["Plan de accion de 30 dias", d.plan30],
+  ];
+  sections.forEach(([title, items]) => {
+    ensure(46); y += 24;
+    doc.setTextColor(10, 116, 218); doc.setFont("helvetica", "bold"); doc.setFontSize(12);
+    doc.text(title, M, y);
+    doc.setTextColor(40, 50, 70); doc.setFont("helvetica", "normal"); doc.setFontSize(10.5);
+    (items || []).filter(Boolean).forEach((it) => {
+      const lines = doc.splitTextToSize("-  " + it, W - M * 2);
+      ensure(lines.length * 14 + 8); y += 16;
+      doc.text(lines, M, y); y += (lines.length - 1) * 13;
+    });
+  });
+
+  ensure(70); y += 28;
+  doc.setDrawColor(225, 235, 244); doc.line(M, y, W - M, y); y += 18;
+  doc.setTextColor(10, 116, 218); doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+  doc.text("Listo para tu plan de 90 dias? Agenda tu Sesion Estrategica Privada.", M, y);
+  y += 15; doc.setTextColor(70, 86, 107); doc.setFont("helvetica", "normal"); doc.setFontSize(10);
+  doc.text("WhatsApp: +52 56 3963 7740   -   soyaimarktech.netlify.app", M, y);
+
+  const safe = (payload.negocio || "negocio").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 30);
+  doc.save(`diagnostico-aimarktech-${safe}.pdf`);
+}
+
+function localDiagnostico(p) {
+  const ranked = rankDims(p.dims);
+  const low = ranked.slice(-2).reverse(); // las 2 más bajas, peor primero
+
+  const dimAdvice = {
+    "Mentalidad Empresarial": {
+      obs: "El negocio depende demasiado de ti, lo que limita tu crecimiento y tu tiempo.",
+      opp: "Delegar y sistematizar para que el negocio opere sin depender de ti.",
+      rec: "Documenta y delega tus 3 tareas más repetitivas; apóyate en asistentes con IA para las respuestas iniciales.",
+    },
+    "Marketing": {
+      obs: "No tienes un sistema constante para atraer prospectos; el flujo de clientes es irregular.",
+      opp: "Construir un embudo simple y medible que genere prospectos cada semana.",
+      rec: "Crea una oferta gancho y automatiza la captación con un formulario y seguimiento por WhatsApp.",
+    },
+    "Tecnología": {
+      obs: "Trabajas con herramientas dispersas (o ninguna), lo que genera desorden y pérdida de información.",
+      opp: "Centralizar tu operación en herramientas integradas (CRM) para no perder clientes ni datos.",
+      rec: "Implementa un CRM sencillo para registrar prospectos y dar seguimiento automático.",
+    },
+    "Inteligencia Artificial": {
+      obs: "Aún no aprovechas la IA, una de tus mayores oportunidades de ahorro de tiempo y ventaja competitiva.",
+      opp: "Usar IA para contenido, atención y automatizaciones que ahorran horas cada semana.",
+      rec: "Empieza con un caso concreto: generación de contenido y respuestas automáticas con IA.",
+    },
+    "Procesos": {
+      obs: "Tus procesos viven en tu cabeza; eso dificulta delegar y mantener la calidad.",
+      opp: "Documentar tus procesos clave para escalar con orden.",
+      rec: "Escribe paso a paso tus 3 procesos principales y conviértelos en checklists.",
+    },
+    "Marca": {
+      obs: "Tu marca no proyecta una imagen clara y coherente, lo que resta confianza.",
+      opp: "Fortalecer tu identidad para generar confianza y atraer mejores clientes.",
+      rec: "Unifica tu identidad visual y tu mensaje en todos tus canales.",
+    },
+  };
+
+  const obstaculos = low.map((d) => dimAdvice[d.label] && dimAdvice[d.label].obs).filter(Boolean);
+  const oportunidades = low.map((d) => dimAdvice[d.label] && dimAdvice[d.label].opp).filter(Boolean);
+  const recomendaciones = low.map((d) => dimAdvice[d.label] && dimAdvice[d.label].rec).filter(Boolean);
+  if (obstaculos.length < 3) obstaculos.push("Falta integrar mentalidad, tecnología y marketing en una sola estrategia coherente.");
+  if (oportunidades.length < 3) oportunidades.push("Tu experiencia y un mercado definido son una base sólida para escalar de forma rentable.");
+  if (recomendaciones.length < 3) recomendaciones.push("Antes de invertir más en publicidad, ordena tu proceso comercial y automatiza la atención inicial con IA.");
+
+  const resumen = `Tu negocio "${p.negocio}" está en nivel ${p.categoria} (${p.overall}/100). ` +
+    `Tu mayor fortaleza es ${ranked[0].short} y tu mayor oportunidad está en ${low[0].short}.`;
+
+  const plan30 = [
+    `Semana 1: Documenta y prioriza. Define una meta clara para ${p.negocio} y escribe tus 3 procesos más importantes.`,
+    "Semana 2: Activa la IA. Implementa una automatización (contenido o atención inicial) para ahorrar tiempo desde ya.",
+    "Semana 3: Ordena tu captación. Crea una oferta gancho y un seguimiento simple para nuevos prospectos.",
+    "Semana 4: Mide y ajusta. Define 2-3 métricas clave y revisa qué está funcionando para escalarlo.",
+  ];
+
+  return {
+    resumen,
+    obstaculos: obstaculos.slice(0, 3),
+    oportunidades: oportunidades.slice(0, 3),
+    recomendaciones: recomendaciones.slice(0, 3),
+    plan30,
+  };
+}
+
+function renderDiagnostico(out, d, payload, cat) {
+  const overall = payload.overall;
+  const ranked = rankDims(payload.dims);
+  const fortalezas = ranked.slice(0, 2);
+  const areas = ranked.slice(-2).reverse();
+
+  const li = (arr) => (arr || []).filter(Boolean)
+    .map((t) => `<li><span class="ic">•</span><div>${escapeHTML(t)}</div></li>`).join("");
+
+  const dimRows = DIM_DEFS.map((dm) => {
+    const v = payload.dims[dm.key] || 0;
+    return `<div class="dim-bar"><span class="dim-bar-label">${dm.short}</span><div class="dim-bar-track"><span style="width:${v}%"></span></div><span class="dim-bar-val">${v}</span></div>`;
+  }).join("");
 
   const waText =
     `Hola Aimarktech, soy ${payload.nombre} (${payload.negocio}).\n` +
-    `Hice el Diagnóstico Express: ${d.score}/100 — ${d.nivel}.\n` +
-    `Mi reto: ${payload.reto}. Mi objetivo: ${payload.objetivo}.\n` +
+    `Hice el Diagnóstico Estratégico: ${overall}/100 — nivel ${cat.label}.\n` +
     `Quiero reservar mi lugar para la Sesión Estratégica Privada.`;
 
   out.innerHTML = `
     <div class="diag-score">
-      <div class="diag-ring" style="--val:${d.score}"><span>${d.score}</span></div>
+      <div class="diag-ring" style="--val:${overall};--ring:${cat.color}"><span>${overall}</span></div>
       <div>
-        <h3>${escapeHTML(d.nivel)}</h3>
-        <p>${escapeHTML(d.resumen)}</p>
+        <p class="diag-kicker">Nivel de Madurez Empresarial</p>
+        <h3>${cat.emoji} ${escapeHTML(cat.label)}</h3>
+        <p>${escapeHTML(d.resumen || "")}</p>
       </div>
     </div>
 
-    <div class="diag-block">
-      <h4>✅ Tu punto a favor</h4>
-      <ul class="diag-list"><li><span class="ic">💪</span><div>${escapeHTML(d.fortaleza)}</div></li></ul>
+    <div class="diag-radar-card">
+      <canvas id="diagRadar" width="320" height="320" aria-label="Gráfica de madurez por área"></canvas>
+      <div class="diag-dims">${dimRows}</div>
     </div>
 
-    <div class="diag-block">
-      <h4>🎯 3 hallazgos para empezar ya</h4>
-      <ul class="diag-list pillars">${recs}</ul>
+    <div class="diag-exec">
+      <div class="exec-col exec-ok">
+        <h4>✓ Fortalezas</h4>
+        <ul>${fortalezas.map((f) => `<li>${escapeHTML(f.label)} <b>(${f.score})</b></li>`).join("")}</ul>
+      </div>
+      <div class="exec-col exec-warn">
+        <h4>⚠ Áreas de oportunidad</h4>
+        <ul>${areas.map((f) => `<li>${escapeHTML(f.label)} <b>(${f.score})</b></li>`).join("")}</ul>
+      </div>
     </div>
+
+    <div class="diag-block"><h4>🚧 Principales obstáculos detectados</h4><ul class="diag-list">${li(d.obstaculos)}</ul></div>
+    <div class="diag-block"><h4>🌱 Oportunidades de crecimiento</h4><ul class="diag-list">${li(d.oportunidades)}</ul></div>
+    <div class="diag-block"><h4>🤖 Recomendaciones de IA y tecnología</h4><ul class="diag-list">${li(d.recomendaciones)}</ul></div>
+    <div class="diag-block"><h4>🗓️ Plan de acción de 30 días</h4><ul class="diag-list pillars">${li(d.plan30)}</ul></div>
 
     <div class="plan-locked premium-offer">
-      <div class="plan-locked-head">🔒 Diagnóstico Estratégico Premium</div>
-      <p class="premium-intro">Tu diagnóstico express ya identificó oportunidades. Ahora, en una <strong>Sesión Estratégica Privada</strong>, transformamos esos hallazgos en un plan de acción real para los próximos 90 días.</p>
-      <ul>
-        <li><span class="ic">✅</span> Prioridades claras de crecimiento</li>
-        <li><span class="ic">✅</span> Automatizaciones con IA aplicables a tu negocio</li>
-        <li><span class="ic">✅</span> Sistema de captación de clientes</li>
-        <li><span class="ic">✅</span> Próximos pasos para escalar</li>
-      </ul>
-      <p class="premium-scarcity">⚠️ Solo abrimos 10 lugares al mes para garantizar atención personalizada.</p>
+      <div class="plan-locked-head">🔒 Lleva tu diagnóstico al siguiente nivel</div>
+      <p class="premium-intro">Este diagnóstico ya te muestra el mapa. En una <strong>Sesión Estratégica Privada</strong> convertimos estos hallazgos en un plan de 90 días hecho a la medida de ${escapeHTML(payload.negocio)}.</p>
+      <p class="premium-scarcity">⚠️ Solo abrimos 10 sesiones al mes para garantizar atención personalizada.</p>
     </div>
 
-    <button type="button" class="btn btn-primary btn-block" id="diagToAgenda">🚀 Reservar mi lugar</button>
-    <a href="${waLink(waText)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:10px;">
-      O escríbeme directo por WhatsApp
-    </a>
+    <div class="btn-row">
+      <button type="button" class="btn btn-primary" id="diagPDF">📄 Descargar mi diagnóstico (PDF)</button>
+      <button type="button" class="btn btn-ghost" id="diagToAgenda">📅 Reservar mi sesión</button>
+    </div>
+    <a href="${waLink(waText)}" target="_blank" rel="noopener" class="btn btn-whatsapp btn-block" style="margin-top:10px;">O escríbeme directo por WhatsApp</a>
     <p class="cta-note byaf" style="text-align:center;margin-top:12px;">Tú decides si lo aplicas. Sin compromiso.</p>
   `;
 
+  const radar = $("#diagRadar");
+  if (radar) drawRadar(radar, payload.dims);
+
   const toAgenda = $("#diagToAgenda");
-  if (toAgenda) {
-    toAgenda.addEventListener("click", () => {
-      const tab = document.querySelector('#tabs .tab-btn[data-tab="agenda"]');
-      if (tab) tab.click();
-    });
-  }
+  if (toAgenda) toAgenda.addEventListener("click", () => {
+    const tab = document.querySelector('#tabs .tab-btn[data-tab="agenda"]');
+    if (tab) tab.click();
+  });
+
+  const pdfBtn = $("#diagPDF");
+  if (pdfBtn) pdfBtn.addEventListener("click", () => buildDiagnosticoPDF(d, payload, cat));
 }
 
 /* =========================================================
