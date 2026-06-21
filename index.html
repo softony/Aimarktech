@@ -22,8 +22,27 @@
 
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="assets/tools.css" />
+
+  <!-- Evita el parpadeo del intro en visitas repetidas: oculta el overlay
+       ANTES de pintar si ya se vio en esta sesión o si se pide menos animación. -->
+  <script>
+    (function () {
+      try {
+        var seen = sessionStorage.getItem("amk_intro") === "1";
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (seen || reduce) document.documentElement.classList.add("intro-seen");
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
+
+  <!-- ===================== INTRO ANIMADA ===================== -->
+  <div id="introOverlay">
+    <canvas id="introCanvas" aria-hidden="true"></canvas>
+    <div class="intro-brand" id="introBrand">AIMARKTECH</div>
+    <button type="button" class="intro-skip" id="introSkip">Saltar intro ✕</button>
+  </div>
 
   <!-- ===================== HEADER ===================== -->
   <header class="site-header" id="top">
@@ -477,5 +496,6 @@
 
   <script src="script.js"></script>
   <script src="assets/visits.js"></script>
+  <script src="assets/intro.js"></script>
 </body>
 </html>
