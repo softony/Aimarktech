@@ -56,7 +56,7 @@
 
       <div class="tabs" id="tabs" role="tablist">
         <button class="tab-btn active" data-tab="diagnostico" role="tab">
-          <span class="tab-emoji">🧠</span> Diagnóstico Express
+          <span class="tab-emoji">🚀</span> Diagnóstico Estratégico
         </button>
         <button class="tab-btn" data-tab="posts" role="tab">
           <span class="tab-emoji">📱</span> Generador de Posts
@@ -79,16 +79,16 @@
       <div class="tool-grid">
         <!-- Entrada -->
         <div class="tool-card">
-          <h2>🧠 Diagnóstico Express con IA</h2>
-          <p class="lead">Responde unas preguntas guiadas (2 min) y recibe tu nivel de madurez digital y hallazgos clave para crecer. Tú decides si lo aplicas.</p>
+          <h2>🚀 Diagnóstico Estratégico Empresarial</h2>
+          <p class="lead">Descubre qué está frenando el crecimiento de tu negocio. En 2 minutos recibes tu <strong>nivel de madurez empresarial</strong>, tus obstáculos, oportunidades y un plan de acción de 30 días, evaluando 6 áreas clave.</p>
 
           <div class="diag-progress">
-            <div class="diag-progress-bar"><span id="diagBar" style="width:33%"></span></div>
-            <p class="diag-progress-label" id="diagStepLabel">Paso 1 de 3 · Sobre tu negocio</p>
+            <div class="diag-progress-bar"><span id="diagBar" style="width:25%"></span></div>
+            <p class="diag-progress-label" id="diagStepLabel">Paso 1 de 4 · Tu negocio</p>
           </div>
 
           <form id="diagForm">
-            <!-- Paso 1: sobre el negocio -->
+            <!-- Paso 1: perfil del negocio -->
             <div class="diag-step active" data-step="1">
               <div class="tfield">
                 <label for="diagNombre">Tu nombre</label>
@@ -98,65 +98,101 @@
                 <label for="diagNegocio">¿A qué se dedica tu negocio?</label>
                 <input type="text" id="diagNegocio" name="negocio" placeholder="Ej. Purificadora, consultorio dental, agencia de seguros…" />
               </div>
+              <div class="tfield">
+                <label>¿Cuál es tu situación actual?</label>
+                <div class="chip-row" id="diagSituacion" data-single="true">
+                  <span class="chip" data-value="Estoy empezando">Estoy empezando</span>
+                  <span class="chip" data-value="Ya vendo pero quiero crecer">Vendo, quiero crecer</span>
+                  <span class="chip" data-value="Tengo un negocio estable">Negocio estable</span>
+                  <span class="chip" data-value="Quiero escalar">Quiero escalar</span>
+                </div>
+              </div>
+              <div class="tfield">
+                <label>¿Cuántos clientes atiendes al mes?</label>
+                <div class="chip-row" id="diagClientes" data-single="true">
+                  <span class="chip" data-value="Menos de 10">Menos de 10</span>
+                  <span class="chip" data-value="10 a 50">10 a 50</span>
+                  <span class="chip" data-value="50 a 100">50 a 100</span>
+                  <span class="chip" data-value="Más de 100">Más de 100</span>
+                </div>
+              </div>
+              <div class="tfield">
+                <label>¿Cuánto inviertes hoy en crecimiento (marketing, herramientas)?</label>
+                <div class="chip-row" id="diagInversion" data-single="true">
+                  <span class="chip" data-value="Nada por ahora">Nada por ahora</span>
+                  <span class="chip" data-value="Menos de $1,000 al mes">&lt; $1,000/mes</span>
+                  <span class="chip" data-value="Entre $1,000 y $5,000 al mes">$1,000–$5,000/mes</span>
+                  <span class="chip" data-value="Más de $5,000 al mes">&gt; $5,000/mes</span>
+                </div>
+              </div>
             </div>
 
-            <!-- Paso 2: situación actual -->
+            <!-- Paso 2: Mentalidad, Procesos y Marca -->
             <div class="diag-step" data-step="2">
               <div class="tfield">
-                <label>¿Cuál es tu reto principal hoy?</label>
-                <div class="chip-row" id="diagRetos" data-single="true">
-                  <span class="chip" data-value="Consigo pocos clientes nuevos">Pocos clientes nuevos</span>
-                  <span class="chip" data-value="Todo depende de mí">Todo depende de mí</span>
-                  <span class="chip" data-value="Mi marketing no da resultados medibles">Marketing sin resultados</span>
-                  <span class="chip" data-value="No sé cómo usar la IA">No sé usar la IA</span>
-                  <span class="chip" data-value="Pierdo tiempo en tareas repetitivas">Tareas repetitivas</span>
-                  <span class="chip" data-value="No tengo presencia digital">Sin presencia digital</span>
+                <label>🧠 Mentalidad · ¿Qué tanto depende el negocio de ti?</label>
+                <div class="chip-row dim" id="dimMentalidad" data-single="true">
+                  <span class="chip" data-score="15" data-label="Todo depende de mí; sin mí, se detiene">Todo depende de mí</span>
+                  <span class="chip" data-score="45" data-label="Delego algunas cosas, pero superviso todo">Delego algo, superviso todo</span>
+                  <span class="chip" data-score="80" data-label="Tengo un equipo que opera sin mí en el día a día">Opera sin mí a diario</span>
                 </div>
               </div>
-
               <div class="tfield">
-                <label>¿Cuál es tu objetivo #1 para los próximos 6 meses?</label>
-                <div class="chip-row" id="diagObjetivo" data-single="true">
-                  <span class="chip" data-value="Atraer más clientes">Atraer más clientes</span>
-                  <span class="chip" data-value="Liberar mi tiempo">Liberar mi tiempo</span>
-                  <span class="chip" data-value="Aumentar mis ventas y ticket">Vender más</span>
-                  <span class="chip" data-value="Ordenar y escalar el negocio">Ordenar y escalar</span>
-                  <span class="chip" data-value="Empezar a usar IA">Empezar a usar IA</span>
+                <label>⚙️ Procesos · ¿Tienes tus procesos documentados?</label>
+                <div class="chip-row dim" id="dimProcesos" data-single="true">
+                  <span class="chip" data-score="15" data-label="No, todo está en mi cabeza">Todo en mi cabeza</span>
+                  <span class="chip" data-score="50" data-label="Algunos, de manera informal">Algunos, informal</span>
+                  <span class="chip" data-score="90" data-label="Sí, documentados y se siguen">Documentados y se siguen</span>
                 </div>
               </div>
-
               <div class="tfield">
-                <label>¿Qué has intentado para crecer?</label>
-                <div class="chip-row" id="diagIntentado" data-single="true">
-                  <span class="chip" data-value="Redes sociales">Redes sociales</span>
-                  <span class="chip" data-value="Publicidad pagada">Publicidad pagada</span>
-                  <span class="chip" data-value="Una página web">Página web</span>
-                  <span class="chip" data-value="Casi nada todavía">Casi nada aún</span>
-                  <span class="chip" data-value="Varias cosas pero sin método">Varias cosas sin método</span>
+                <label>✨ Marca · ¿Tu negocio tiene una identidad clara?</label>
+                <div class="chip-row dim" id="dimMarca" data-single="true">
+                  <span class="chip" data-score="20" data-label="No tengo una identidad definida">Sin identidad definida</span>
+                  <span class="chip" data-score="50" data-label="Tengo logo e imagen, pero inconsistente">Logo, pero inconsistente</span>
+                  <span class="chip" data-score="90" data-label="Marca clara, profesional y coherente">Marca clara y coherente</span>
                 </div>
-              </div>
-
-              <div class="tfield">
-                <label for="diagDigital">¿Qué tan digital es tu negocio hoy?</label>
-                <select id="diagDigital" name="digital">
-                  <option value="1">Apenas empiezo (no tengo redes ni sistemas)</option>
-                  <option value="2">Tengo redes sociales pero sin estrategia</option>
-                  <option value="3">Tengo algo de presencia y herramientas básicas</option>
-                  <option value="4">Uso varias herramientas pero sin integrar</option>
-                  <option value="5">Estoy bastante digitalizado, quiero optimizar</option>
-                </select>
               </div>
             </div>
 
-            <!-- Paso 3: contacto -->
+            <!-- Paso 3: Marketing, Tecnología e IA -->
             <div class="diag-step" data-step="3">
               <div class="tfield">
-                <label for="diagContacto">¿A dónde te enviamos tu plan? (WhatsApp o correo)</label>
-                <input type="text" id="diagContacto" name="contacto" placeholder="Opcional, pero recomendado para tu plan completo" />
+                <label>📈 Marketing · ¿Generas prospectos de forma constante?</label>
+                <div class="chip-row dim" id="dimMarketing" data-single="true">
+                  <span class="chip" data-score="20" data-label="Casi todo llega por recomendación o suerte">Por recomendación/suerte</span>
+                  <span class="chip" data-score="50" data-label="A veces, pero sin un sistema fijo">A veces, sin sistema</span>
+                  <span class="chip" data-score="90" data-label="Sí, tengo un sistema que genera prospectos">Tengo un sistema</span>
+                </div>
+              </div>
+              <div class="tfield">
+                <label>🛠️ Tecnología · ¿Usas herramientas o un CRM?</label>
+                <div class="chip-row dim" id="dimTecnologia" data-single="true">
+                  <span class="chip" data-score="15" data-label="No uso herramientas digitales">No uso herramientas</span>
+                  <span class="chip" data-score="45" data-label="Uso básicas como WhatsApp y Excel">Básicas (WhatsApp, Excel)</span>
+                  <span class="chip" data-score="85" data-label="Uso un CRM o herramientas integradas">CRM / integradas</span>
+                </div>
+              </div>
+              <div class="tfield">
+                <label>🤖 Inteligencia Artificial · ¿La usas en tu negocio?</label>
+                <div class="chip-row dim" id="dimIA" data-single="true">
+                  <span class="chip" data-score="10" data-label="No, nada todavía">Nada todavía</span>
+                  <span class="chip" data-score="45" data-label="Uso ChatGPT de vez en cuando">ChatGPT a veces</span>
+                  <span class="chip" data-score="90" data-label="Tengo automatizaciones con IA funcionando">Automatizaciones con IA</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Paso 4: contacto OBLIGATORIO -->
+            <div class="diag-step" data-step="4">
+              <div class="tfield">
+                <label for="diagContacto">¿A dónde te enviamos tu diagnóstico? <span class="req">*</span></label>
+                <input type="text" id="diagContacto" name="contacto" placeholder="Tu correo o WhatsApp (obligatorio)" required />
+                <span class="hint">Lo necesitamos para generar y entregarte tu diagnóstico estratégico. Podrás descargarlo en PDF al instante.</span>
               </div>
               <div class="info-note">
                 <span class="ic">🔒</span>
-                <span>Usamos tus datos solo para tu diagnóstico y, si quieres, contactarte. <strong>Tú decides si lo aplicas.</strong> Sin spam.</span>
+                <span>Usamos tus datos solo para tu diagnóstico y, si lo deseas, contactarte. <strong>Tú decides si lo aplicas.</strong> Sin spam.</span>
               </div>
             </div>
 
@@ -171,8 +207,8 @@
         <!-- Resultado -->
         <div class="result-box" id="diagResult">
           <div class="result-empty">
-            <span class="big">🧠</span>
-            <p>Tu diagnóstico personalizado aparecerá aquí.</p>
+            <span class="big">🚀</span>
+            <p>Tu diagnóstico estratégico personalizado aparecerá aquí.</p>
           </div>
         </div>
       </div>
@@ -346,6 +382,7 @@
     <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.715zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
   </a>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
   <script src="assets/tools.js"></script>
   <script src="assets/visits.js"></script>
 </body>

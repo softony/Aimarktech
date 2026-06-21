@@ -74,34 +74,42 @@ exports.handler = async (event) => {
 
 /* ---------- Prompts ---------- */
 function diagnosticoPrompt(p) {
-  return `Eres un consultor de negocios de la agencia "Aimarktech" (IA, Marketing y Mentalidad Empresarial).
-Filosofía: "Primero trabajamos en el empresario, después en el negocio". Trabajan 3 pilares:
-Mentalidad, Tecnología & IA, y Crecimiento medible.
+  const dims = p.dims || {};
+  const r = p.respuestas || {};
+  return `Eres un consultor senior de "Aimarktech", agencia que integra Mentalidad Empresarial + Tecnología + Inteligencia Artificial + Marketing Estratégico.
+Filosofía: "Primero trabajamos en el empresario, después en el negocio". Diferenciadores: diagnóstico integral, acompañamiento humano, integración total (mentalidad+tecnología+IA+marketing) y visión de crecimiento a largo plazo.
 
-Genera un diagnóstico EXPRESS para este negocio. Responde SOLO con un JSON válido, sin texto extra, con esta forma exacta:
+Vas a entregar un DIAGNÓSTICO ESTRATÉGICO EMPRESARIAL personalizado, con tono de consultoría real (no genérico), profesional, cercano y honesto, en español de México. NUNCA inventes cifras de resultados ni prometas de más.
+
+El nivel de madurez (puntuación ${p.overall}/100, categoría "${p.categoria}") y las puntuaciones por área YA están calculados; NO los recalcules. Tu trabajo es interpretar estos datos y dar valor accionable.
+
+Responde SOLO con un JSON válido, sin texto extra, con esta forma exacta:
 {
-  "score": <número 15-95 de madurez digital>,
-  "nivel": "<2-4 palabras, ej. 'En crecimiento'>",
-  "resumen": "<1-2 frases motivadoras y realistas>",
-  "fortaleza": "<1 frase sobre su punto a favor>",
-  "recomendaciones": [
-    {"pilar": "🧠 Mentalidad", "txt": "<recomendación accionable>"},
-    {"pilar": "🤖 Tecnología & IA", "txt": "<recomendación accionable>"},
-    {"pilar": "📈 Crecimiento", "txt": "<recomendación accionable>"}
-  ]
+  "resumen": "<2-3 frases ejecutivas que interpreten su nivel de madurez y su situación, mencionando su mayor fortaleza y su mayor oportunidad>",
+  "obstaculos": ["<obstáculo concreto 1>", "<obstáculo 2>", "<obstáculo 3>"],
+  "oportunidades": ["<oportunidad de crecimiento 1>", "<oportunidad 2>", "<oportunidad 3>"],
+  "recomendaciones": ["<recomendación de IA/tecnología específica 1>", "<recomendación 2>", "<recomendación 3>"],
+  "plan30": ["Semana 1: <acción>", "Semana 2: <acción>", "Semana 3: <acción>", "Semana 4: <acción>"]
 }
 
+Prioriza las áreas con menor puntuación al señalar obstáculos y oportunidades. Las recomendaciones deben ser específicas para su giro y aterrizadas (qué herramienta o automatización con IA usar y para qué). El plan de 30 días debe ser realista y secuencial.
+
 Datos del negocio:
-- Nombre del dueño: ${p.nombre}
-- Giro del negocio: ${p.negocio}
-- Reto principal: ${p.reto}
-- Objetivo principal a 6 meses: ${p.objetivo || "no especificado"}
-- Qué ha intentado para crecer: ${p.intentado || "no especificado"}
-- Nivel de madurez digital (1-5): ${p.digital}
+- Dueño: ${p.nombre}
+- Giro: ${p.negocio}
+- Situación actual: ${p.situacion || "no especificada"}
+- Clientes al mes: ${p.clientes || "no especificado"}
+- Inversión actual en crecimiento: ${p.inversion || "no especificada"}
 
-Las 3 recomendaciones deben ser hallazgos accionables y específicos para su giro y su objetivo (son un adelanto de valor real; el plan completo de 90 días se entrega en una sesión).
+Puntuación por área (0-100) y respuesta del dueño:
+- Mentalidad Empresarial: ${dims.mentalidad} — "${r.mentalidad || ""}"
+- Marketing: ${dims.marketing} — "${r.marketing || ""}"
+- Tecnología: ${dims.tecnologia} — "${r.tecnologia || ""}"
+- Inteligencia Artificial: ${dims.ia} — "${r.ia || ""}"
+- Procesos: ${dims.procesos} — "${r.procesos || ""}"
+- Marca: ${dims.marca} — "${r.marca || ""}"
 
-Tono: cercano, profesional y en español de México. Recomendaciones concretas y específicas para su giro.`;
+Cierra el "resumen" conectando con el siguiente paso natural (una Sesión Estratégica Privada para un plan de 90 días), sin ser agresivo.`;
 }
 
 function postPrompt(p) {
@@ -126,9 +134,15 @@ Español de México, persuasivo y natural.`;
 async function generateDiagnostico(p) {
   const raw = await chat(diagnosticoPrompt(p));
   const data = parseJSON(raw);
-  // Normalización defensiva
-  data.score = clamp(parseInt(data.score, 10) || 50, 15, 95);
-  if (!Array.isArray(data.recomendaciones)) data.recomendaciones = [];
+  // Normalización defensiva: nos aseguramos de las 5 secciones
+  data.resumen = typeof data.resumen === "string" ? data.resumen : "";
+  ["obstaculos", "oportunidades", "recomendaciones", "plan30"].forEach((k) => {
+    if (!Array.isArray(data[k])) data[k] = [];
+  });
+  // Si la IA no devolvió un plan utilizable, señalamos fallo para usar el modo local
+  if (!data.plan30.length || !data.recomendaciones.length) {
+    throw new Error("Respuesta de IA incompleta");
+  }
   return data;
 }
 
@@ -173,7 +187,7 @@ async function chatAnthropic(prompt) {
     },
     body: JSON.stringify({
       model: ANTHROPIC_MODEL,
-      max_tokens: 1024,
+      max_tokens: 1500,
       messages: [{ role: "user", content: prompt }],
     }),
   });
