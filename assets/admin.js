@@ -28,8 +28,6 @@ let ALL_LEADS = [];       // cache normalizado para los controles
 // Estado de la vista
 const STATE = { view: "prospectos", search: "", dateFilter: "all" };
 
-const PROSPECT_TYPES = ["Diagnóstico", "Cita agendada"];
-
 document.addEventListener("DOMContentLoaded", () => {
   // ¿Sesión previa? Reintenta con el token guardado.
   if (sessionStorage.getItem(SESSION_KEY) === "1") {
@@ -135,7 +133,7 @@ function getLeads() {
   catch (e) { return []; }
 }
 
-const isProspect = (l) => PROSPECT_TYPES.includes(l.tipo);
+const isProspect = (l) => Boolean((l.contacto || "").trim());
 
 function parseScore(detalle) {
   const m = /Puntuaci[oó]n:\s*(\d+)/i.exec(detalle || "");
