@@ -502,9 +502,3 @@ a { color: inherit; text-decoration: none; }
 .legal-content ul { margin: 8px 0 14px 22px; }
 .legal-content li { color: var(--ink-soft); line-height: 1.7; margin-bottom: 6px; }
 .legal-content a { color: var(--blue); }
-.legal-note {
-  background: var(--bg-soft); border: 1px solid var(--line); border-left: 4px solid var(--yellow);
-  border-radius: 10px; padding: 14px 16px; margin: 18px 0; font-size: .92rem; color: var(--ink-soft);
-}
-.legal-note strong { color: var(--ink); }
-.legal-fill { background: rgba(255,206,0,.18); padding: 1px 6px; border-radius: 5px; font-weight: 700; color: #9a7b00; }
