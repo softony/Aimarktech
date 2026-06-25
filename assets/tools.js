@@ -58,6 +58,12 @@ function saveLead(lead) {
       keepalive: true,
     }).catch(() => {});
   } catch (e) { /* sin servidor: solo queda en localStorage */ }
+
+  // Evento de analítica (solo si el usuario aceptó cookies y GA está activo)
+  if (window.amkTrack) {
+    window.amkTrack("lead_capturado", { tipo: lead.tipo });
+    if (lead.tipo === "Diagnóstico") window.amkTrack("diagnostico_completado", {});
+  }
 }
 
 /* Llama a la función serverless si está disponible; si no, devuelve null */
