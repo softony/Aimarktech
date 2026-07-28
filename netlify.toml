@@ -13,6 +13,16 @@
 [functions]
   node_bundler = "esbuild"
 
+# Rutas /api/* -> funciones de Netlify.
+# El frontend llama a /api/* (ruta compatible con Cloudflare Pages).
+# En Netlify reescribimos esas rutas a las funciones nativas, así el
+# MISMO repositorio funciona en Netlify y en Cloudflare durante la migración.
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = true
+
 # Cabeceras de seguridad básicas
 [[headers]]
   for = "/*"

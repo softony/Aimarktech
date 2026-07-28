@@ -17,7 +17,7 @@
 (function () {
   "use strict";
 
-  var ENDPOINT = "/.netlify/functions/visits";
+  var ENDPOINT = "/api/visits";
   var SESSION_KEY = "amk_visit_counted";
 
   document.addEventListener("DOMContentLoaded", function () {
