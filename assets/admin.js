@@ -17,7 +17,7 @@ const ADMIN_PASS = "Aimark2026"; // fallback local (modo sin Supabase). Cámbial
 const LEADS_KEY = "aimarktech_leads";
 const SESSION_KEY = "aimarktech_admin_ok";
 const TOKEN_KEY = "aimarktech_admin_token";
-const LEADS_ENDPOINT = "/.netlify/functions/leads";
+const LEADS_ENDPOINT = "/api/leads";
 
 const $ = (s) => document.querySelector(s);
 

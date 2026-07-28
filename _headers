@@ -1,0 +1,6 @@
+# Cabeceras de seguridad para Cloudflare Pages
+# (equivalente a las que estaban en netlify.toml)
+/*
+  X-Frame-Options: SAMEORIGIN
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

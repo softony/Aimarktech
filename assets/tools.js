@@ -13,7 +13,7 @@ const CONFIG = {
   whatsappMsg: "¡Hola Aimarktech! Vengo de tus herramientas con IA y quiero más información.",
   brand: "Aimarktech",
   // Endpoint de la función serverless (opcional). Si no existe, usamos modo local.
-  aiEndpoint: "/.netlify/functions/ai-generate",
+  aiEndpoint: "/api/ai-generate",
 };
 
 /* Colores de marca (para el lienzo del generador de posts) */
@@ -51,7 +51,7 @@ function saveLead(lead) {
 
   // Envío al servidor (Supabase). Best-effort: si no está configurado, se ignora.
   try {
-    fetch("/.netlify/functions/leads", {
+    fetch("/api/leads", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(lead),
@@ -96,7 +96,7 @@ async function checkAIStatus() {
 /* Comprueba si Kie AI (imágenes) está conectado para mostrar la opción */
 async function checkKieStatus() {
   try {
-    const res = await fetch("/.netlify/functions/kie-image", { method: "GET" });
+    const res = await fetch("/api/kie-image", { method: "GET" });
     if (!res.ok) return;
     const data = await res.json();
     if (data && data.configured) {
@@ -644,7 +644,7 @@ function initPosts() {
    Devuelve un data URL (base64) o null si falla / no está configurado. */
 async function generateKieImage(payload, out) {
   try {
-    const res = await fetch("/.netlify/functions/kie-image", {
+    const res = await fetch("/api/kie-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -656,7 +656,7 @@ async function generateKieImage(payload, out) {
     const started = Date.now();
     while (Date.now() - started < 90000) { // hasta 90s
       await sleep(3000);
-      const sRes = await fetch(`/.netlify/functions/kie-image?taskId=${encodeURIComponent(taskId)}`);
+      const sRes = await fetch(`/api/kie-image?taskId=${encodeURIComponent(taskId)}`);
       const s = await sRes.json();
       if (s.state === "success" && s.image) return s.image;
       if (s.state === "fail") return null;
