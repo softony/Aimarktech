@@ -193,6 +193,24 @@ a { color: inherit; text-decoration: none; }
   border-radius: 0 14px 14px 0; font-style: italic; color: var(--ink);
   box-shadow: var(--shadow-sm); font-size: 1.05rem;
 }
+.solution-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 24px;
+}
+.solution-actions .btn {
+  flex: 1;
+  justify-content: center;
+  text-align: center;
+}
+.solution-actions .solution-primary { flex: 1.2; }
+.filosofia-text > .solution-note {
+  margin: 12px 0 0;
+  color: var(--ink-soft);
+  font-size: .88rem;
+  line-height: 1.45;
+}
 .filosofia-pillars { display: grid; gap: 18px; }
 .pill-step { display: flex; gap: 18px; background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; box-shadow: var(--shadow-sm); }
 .pill-step span {
@@ -405,6 +423,8 @@ a { color: inherit; text-decoration: none; }
 
   .metodo-grid, .serv-grid, .pain-grid, .dif-grid, .footer-inner { grid-template-columns: 1fr; }
   .hero-actions .btn { flex: 1; }
+  .solution-actions { flex-direction: column; }
+  .solution-actions .btn { width: 100%; }
 }
 
 
