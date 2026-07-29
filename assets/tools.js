@@ -437,7 +437,7 @@ function buildDiagnosticoPDF(d, payload, cat) {
   doc.setTextColor(10, 116, 218); doc.setFont("helvetica", "bold"); doc.setFontSize(11);
   doc.text("Listo para tu plan de 90 dias? Agenda tu Sesion Estrategica Privada.", M, y);
   y += 15; doc.setTextColor(70, 86, 107); doc.setFont("helvetica", "normal"); doc.setFontSize(10);
-  doc.text("WhatsApp: +52 56 3963 7740   -   soyaimarktech.netlify.app", M, y);
+  doc.text("WhatsApp: +52 56 3963 7740   -   soyaimarktech.com", M, y);
 
   const safe = (payload.negocio || "negocio").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 30);
   doc.save(`diagnostico-aimarktech-${safe}.pdf`);
