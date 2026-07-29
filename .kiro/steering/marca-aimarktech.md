@@ -46,3 +46,11 @@ Cualquier texto nuevo debe ser coherente con este documento.
 ## Notas de contenido / SEO
 - Casos de éxito: solo con **consentimiento del cliente** o **anonimizados**. Nunca inventar cifras ni testimonios.
 - Dominio oficial: `soyaimarktech.com` (no usar `soyaimarktech.netlify.app`).
+
+
+## Política de URLs y hoja de ruta SEO local
+- Las URLs públicas canónicas deben escribirse **sin `.html`**, igual que las sirve Cloudflare Pages: `/sistema-digital-pymes`, `/herramientas`, `/nosotros`, `/aviso-de-privacidad`, `/terminos` y `/cookies`. Sitemap, canonical, Open Graph, JSON-LD y enlaces internos deben coincidir para evitar redirecciones innecesarias y señales duplicadas.
+- **Siguiente página local prioritaria (pendiente, no publicada):** una página específica de marketing digital para PyMEs de Valle de Chalco. Debe responder a una intención real de búsqueda, describir servicios que Aimarktech presta efectivamente y aportar contenido propio; no crear una landing genérica o duplicada solo para posicionar.
+- **Expansión geográfica posible (pendiente de confirmación):** Ixtapaluca, Estado de México. Aimarktech ya puede atenderla por su alcance nacional, pero no se debe afirmar presencia física ni crear una página local hasta confirmar la estrategia, oferta y evidencia local que la hagan útil.
+- Si se aprueba una página para Ixtapaluca, debe tener contenido y valor diferenciados respecto de Valle de Chalco. Evitar páginas idénticas cambiando únicamente el nombre de la ciudad (*doorway pages*).
+- Cada nueva página indexable deberá incorporarse con URL limpia al sitemap, enlazarse desde páginas relacionadas y usar canonical, Open Graph y schema coherentes con esa misma URL.
