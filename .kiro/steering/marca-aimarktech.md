@@ -41,7 +41,7 @@ Cualquier texto nuevo debe ser coherente con este documento.
 - **Mensaje Maestro:** "Transformamos tu negocio, potenciamos tu mentalidad, y diseñamos contigo un camino de crecimiento rentable, seguro y escalable en la era digital."
 
 ## Contacto oficial
-- WhatsApp: +52 56 3963 7740 · Correo público: soyaimarktech@gmail.com · Sitio: https://soyaimarktech.com
+- WhatsApp: +52 56 3963 7740 · Correo público: contacto@soyaimarktech.com · Sitio: https://soyaimarktech.com
 
 ## Notas de contenido / SEO
 - Casos de éxito: solo con **consentimiento del cliente** o **anonimizados**. Nunca inventar cifras ni testimonios.
