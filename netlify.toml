@@ -13,10 +13,20 @@
 [functions]
   node_bundler = "esbuild"
 
-# Rutas /api/* -> funciones de Netlify.
-# El frontend llama a /api/* (ruta compatible con Cloudflare Pages).
-# En Netlify reescribimos esas rutas a las funciones nativas, así el
-# MISMO repositorio funciona en Netlify y en Cloudflare durante la migración.
+# Redirección 301 permanente: el sitio oficial ahora vive en Cloudflare,
+# bajo el dominio soyaimarktech.com. Todo el tráfico que llegue a la URL
+# vieja de Netlify (soyaimarktech.netlify.app) se manda al dominio nuevo,
+# conservando la ruta. Esto consolida el SEO en un solo dominio y evita
+# contenido duplicado. (Solo afecta a Netlify; Cloudflare ignora este archivo.)
+[[redirects]]
+  from = "/*"
+  to = "https://soyaimarktech.com/:splat"
+  status = 301
+  force = true
+
+# (Histórico) Rutas /api/* -> funciones de Netlify. Queda por debajo de la
+# redirección anterior, por lo que ya no se alcanza; se conserva como respaldo
+# por si se desactivara temporalmente la redirección al dominio nuevo.
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"

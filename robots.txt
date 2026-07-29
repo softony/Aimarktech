@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin.html
 Disallow: /.netlify/
 
-Sitemap: https://soyaimarktech.netlify.app/sitemap.xml
+Sitemap: https://soyaimarktech.com/sitemap.xml
