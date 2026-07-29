@@ -156,6 +156,8 @@ function initTabs() {
       $$(".tool-panel").forEach((p) =>
         p.classList.toggle("active", p.id === `panel-${id}`)
       );
+      // Mantener la URL sincronizada para que los enlaces internos activen la pestaña correcta.
+      if (location.hash !== `#${id}`) history.replaceState(null, "", `#${id}`);
       // Desplazar suavemente al panel
       const panel = $(`#panel-${id}`);
       if (panel) {
@@ -165,12 +167,17 @@ function initTabs() {
     });
   });
 
-  // Si la URL trae #posts / #agenda / #diagnostico, abre esa pestaña
-  const hash = (location.hash || "").replace("#", "");
-  if (["diagnostico", "posts", "agenda"].includes(hash)) {
-    const b = tabs.find((t) => t.dataset.tab === hash);
-    if (b) b.click();
-  }
+  const openHashTab = () => {
+    const hash = (location.hash || "").replace("#", "");
+    if (["diagnostico", "posts", "agenda"].includes(hash)) {
+      const b = tabs.find((t) => t.dataset.tab === hash);
+      if (b) b.click();
+    }
+  };
+
+  // Abrir la pestaña indicada al cargar y al usar enlaces internos del menú.
+  openHashTab();
+  window.addEventListener("hashchange", openHashTab);
 }
 
 /* ============ Chips (selección simple) ============ */
@@ -523,7 +530,7 @@ function renderDiagnostico(out, d, payload, cat) {
   const waText =
     `Hola Aimarktech, soy ${payload.nombre} (${payload.negocio}).\n` +
     `Hice el Diagnóstico Estratégico: ${overall}/100 — nivel ${cat.label}.\n` +
-    `Quiero reservar mi lugar para la Sesión Estratégica Privada.`;
+    `Quiero agendar una sesión para revisar mis resultados.`;
 
   out.innerHTML = `
     <div class="diag-score">
@@ -557,9 +564,8 @@ function renderDiagnostico(out, d, payload, cat) {
     <div class="diag-block"><h4>🗓️ Plan de acción de 30 días</h4><ul class="diag-list pillars">${li(d.plan30)}</ul></div>
 
     <div class="plan-locked premium-offer">
-      <div class="plan-locked-head">🔒 Lleva tu diagnóstico al siguiente nivel</div>
-      <p class="premium-intro">Este diagnóstico ya te muestra el mapa. En una <strong>Sesión Estratégica Privada</strong> convertimos estos hallazgos en un plan de 90 días hecho a la medida de ${escapeHTML(payload.negocio)}.</p>
-      <p class="premium-scarcity">⚠️ Solo abrimos 10 sesiones al mes para garantizar atención personalizada.</p>
+      <div class="plan-locked-head">Siguiente paso opcional</div>
+      <p class="premium-intro">Este diagnóstico te muestra un primer mapa. En una <strong>sesión estratégica</strong> podemos revisar los hallazgos, resolver dudas y definir posibles prioridades para ${escapeHTML(payload.negocio)}.</p>
     </div>
 
     <div class="btn-row">
