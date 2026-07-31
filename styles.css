@@ -711,3 +711,28 @@ a { color: inherit; text-decoration: none; }
   .process-card::after { display: none; }
   .service-proof { display: grid; }
 }
+
+
+/* ===================== CERCA DE TI (SEO LOCAL) ===================== */
+.local { background: var(--bg); }
+.local .section-head { margin-inline: auto; }
+.local-zones {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px auto 0;
+  max-width: 760px;
+}
+.local-zones li {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: .98rem;
+  color: var(--blue);
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 10px 20px;
+  box-shadow: var(--shadow-sm);
+}
