@@ -4,3 +4,11 @@
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
+
+# Los recursos compartidos conservan su URL entre despliegues.
+# Obligar al navegador a revalidarlos evita mezclar HTML nuevo con CSS/JS antiguos.
+/styles.css
+  Cache-Control: public, max-age=0, must-revalidate
+
+/script.js
+  Cache-Control: public, max-age=0, must-revalidate
