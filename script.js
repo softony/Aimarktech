@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* ---------- Animación al hacer scroll (reveal) ---------- */
   const revealEls = document.querySelectorAll(
-    ".section-head, .pain-card, .pill-step, .metodo-card, .serv-card, .ventaja-card, .process-card, .price-card, .deliverable-card, .audience-card, .honest-box, .faq-list details, .porque-text, .porque-media, .cta-box, .filosofia-text, .quote"
+    ".section-head, .pain-card, .pill-step, .metodo-card, .serv-card, .ventaja-card, .process-card, .price-card, .deliverable-card, .audience-card, .honest-box, .faq-list details, .porque-text, .porque-media, .cta-box, .filosofia-text, .quote, .local-copy, .local-coverage"
   );
   revealEls.forEach((el) => el.classList.add("reveal"));
 
