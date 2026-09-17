@@ -7,7 +7,7 @@
 const CONFIG = {
   // Número de WhatsApp en formato internacional SIN signos ni espacios.
   // Ejemplo México: 52 + 10 dígitos  ->  "521234567890"
-  whatsapp: "525639637740",
+  whatsapp: "525529317837",
   // Mensaje con el que se abre WhatsApp
   whatsappMsg: "¡Hola Aimarktech! Vi tu sitio y me interesa agendar un diagnóstico para mi negocio.",
 };
