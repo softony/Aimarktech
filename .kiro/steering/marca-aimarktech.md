@@ -12,7 +12,9 @@ Cualquier texto nuevo debe ser coherente con este documento.
 ## Voz y tono (DECISIÓN CLAVE)
 - **Aterrizada y honesta.** La honestidad es el diferenciador principal ("resultados medibles", "sin humo", "costos honestos", "no vendemos sueños vacíos ni soluciones mágicas"). Los diagnósticos a clientes incluyen secciones como *"Asteriscos honestos"* — ese es el ADN.
 - Se conserva el **alma**: mentalidad, transformación real, acompañamiento humano, y la visión de 10,000 negocios como estrella-guía.
-- El **mensaje de venta lidera con lo concreto** que el cliente compra (orden del negocio, redes sociales, sistemas, IA aplicada), NO con coaching abstracto.
+- El **mensaje de venta lidera con los beneficios y situaciones del cliente**: conseguir clientes, dar seguimiento a consultas y simplificar tareas. Marketing, procesos, herramientas e IA explican cómo lo hacemos.
+- **Público prioritario de la portada:** comercios y pequeños negocios de servicios en México.
+- **Encabezado de la portada:** "Consigue más clientes sin tener que hacerlo todo tú." Desarrollar la promesa con acciones concretas y acompañamiento, sin garantizar ventas ni autonomía total.
 - **Evitar:** lenguaje de "gurú/hype" y sobre-promesas ("construimos imperios digitales", "de la idea al imperio", promesas de resultados garantizados). Punchy sí, humo no.
 
 ## Servicio #1 (lo que se vende hoy)
