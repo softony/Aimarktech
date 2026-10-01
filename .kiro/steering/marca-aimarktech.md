@@ -46,6 +46,7 @@ Cualquier texto nuevo debe ser coherente con este documento.
 - WhatsApp: +52 55 2931 7837 · Correo público: contacto@soyaimarktech.com · Sitio: https://soyaimarktech.com
 
 ## Notas de contenido / SEO
+- **Diseño del inicio:** conservar la introducción animada de entrada. Es una preferencia explícita del propietario; las mejoras del encabezado deben mantenerla.
 - Casos de éxito: solo con **consentimiento del cliente** o **anonimizados**. Nunca inventar cifras ni testimonios.
 - Dominio oficial: `soyaimarktech.com` (no usar `soyaimarktech.netlify.app`).
 

@@ -1,0 +1,106 @@
+/* Primera pantalla y ejemplos visuales de la portada. */
+.home-page .hero { padding: clamp(40px, 6vw, 78px) 0 64px; isolation: isolate; }
+.home-page .hero-bg { z-index: 0; }
+.home-page .hero-inner { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); gap: clamp(28px, 4vw, 52px); }
+.home-page .hero-content { min-width: 0; }
+.home-page .hero-trust { gap: 16px 0; }
+.home-page .hero-trust li { padding-right: 16px; padding-left: 16px; }
+.home-page .hero-trust li:first-child { padding-left: 0; }
+.home-page .hero-trust strong { font-size: 1.2rem; }
+.hero-showcase { position: relative; min-width: 0; }
+.hero-showcase::before { content: ""; position: absolute; inset: -28px -20px 20px; z-index: -1; background: radial-gradient(ellipse, rgba(0,194,255,.18), transparent 70%); }
+.followup-demo { background: #fff; border: 1px solid #dce7f3; border-radius: 24px; box-shadow: 0 24px 64px rgba(10,70,125,.13); overflow: hidden; }
+.demo-topline { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding: 17px 24px; border-bottom: 1px solid var(--line); }
+.demo-kicker { font-size: .72rem; font-family: var(--font-head); font-weight: 800; text-transform: uppercase; letter-spacing: .055em; color: #0763ae; }
+.demo-example { font-size: .75rem; color: var(--ink-soft); }
+.demo-body { padding: 24px 26px 16px; background: radial-gradient(ellipse at 100% 0%, rgba(0,194,255,.07), transparent 60%); }
+.demo-body h2 { font-size: clamp(1.25rem, 2vw, 1.5rem); line-height: 1.22; letter-spacing: -.5px; margin-bottom: 20px; }
+.demo-message { max-width: 90%; border-radius: 15px 15px 15px 3px; background: #eff7ff; padding: 15px 18px; }
+.demo-label { display: flex; align-items: center; gap: 7px; color: var(--ink-soft); font-size: .75rem; margin-bottom: 7px; }
+.demo-label svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; flex-shrink: 0; }
+.demo-message p { font-size: 1rem; line-height: 1.5; }
+.demo-connector { height: 30px; display: flex; align-items: center; margin-left: 28px; color: #0878c1; }
+.demo-connector span { font-size: 1.35rem; line-height: 1; }
+.demo-detail { min-height: 169px; padding: 13px 18px; margin-left: 24px; border-left: 3px solid var(--cyan); background: #f7fafc; border-radius: 0 12px 12px 0; }
+.demo-status { display: inline-block; margin-bottom: 8px; color: #086685; font-size: .72rem; font-weight: 700; }
+.demo-detail h3 { font-size: .96rem; margin-bottom: 7px; line-height: 1.35; }
+.demo-detail p { font-size: .9rem; line-height: 1.55; color: var(--ink-soft); white-space: pre-line; }
+.demo-steps { display: grid; grid-template-columns: 1fr 1fr 1.35fr; gap: 10px; margin-top: 20px; }
+.followup-demo [hidden] { display: none !important; }
+.demo-steps button { border: 0; border-top: 3px solid var(--line); background: transparent; color: var(--ink-soft); text-align: left; font: 700 .76rem/1.4 var(--font-body); padding: 10px 0 4px; min-height: 52px; cursor: pointer; transition: border-color .2s ease, color .2s ease; }
+.demo-steps button span { display: block; font-size: .7rem; font-weight: 400; margin-bottom: 2px; }
+.demo-steps button[aria-pressed="true"] { border-top-color: var(--blue); color: #075fa9; }
+.demo-steps button:hover { color: var(--blue); }
+.demo-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 15px 24px; border-top: 1px solid var(--line); }
+.demo-footer p { color: var(--ink-soft); font-size: .75rem; flex: 1 1 140px; }
+.demo-play { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 10px 15px; border: 0; border-radius: 50px; background: #086ec4; color: #fff; font: 700 .78rem var(--font-body); cursor: pointer; }
+.demo-play:hover { background: #055ca5; }
+.demo-play-symbol { font-size: .68rem; }
+.demo-caption { font-size: .78rem; color: var(--ink-soft); text-align: center; margin: 14px 8px 0; }
+.followup-demo button:focus-visible, .home-page .nav a:focus-visible, .home-page .nav-toggle:focus-visible { outline: 3px solid #095ca9; outline-offset: 4px; }
+.demo-detail.is-entering { animation: demo-enter .35s ease both; }
+@keyframes demo-enter { from { opacity: .35; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Una muestra legible del entregable, también en móvil. */
+.home-page .diag-band-box { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 64px); }
+.diagnostic-preview { min-width: 0; margin: 0; }
+.diagnostic-sheet { position: relative; padding: 25px 28px; background: #fff; color: var(--ink); border-radius: 16px; box-shadow: 0 18px 40px rgba(0,0,0,.15); border-top: 4px solid var(--cyan); }
+.diagnostic-sheet-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding-bottom: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--line); color: var(--ink-soft); font-size: .72rem; }
+.diagnostic-example { border-radius: 5px; padding: 3px 7px; background: #eff7ff; color: #075fa9; font-weight: 700; }
+.diagnostic-sheet h3 { font-size: 1.4rem; line-height: 1.25; margin-bottom: 22px; }
+.diagnostic-label { display: block; font-size: .7rem; font-family: var(--font-head); font-weight: 700; text-transform: uppercase; letter-spacing: .055em; color: var(--ink-soft); margin-bottom: 5px; }
+.diagnostic-insight { border-left: 3px solid #e5af06; padding: 3px 0 3px 12px; margin-bottom: 18px; }
+.diagnostic-insight p { font-weight: 700; font-size: .97rem; }
+.diagnostic-action p { font-size: .9rem; line-height: 1.5; }
+.diagnostic-plan-title { margin-top: 23px; }
+.diagnostic-roadmap { list-style: none; margin-top: 12px; display: grid; gap: 0; }
+.diagnostic-roadmap li { position: relative; margin-left: 4px; padding: 0 0 13px 17px; border-left: 1px solid #c7dfed; font-size: .81rem; line-height: 1.4; }
+.diagnostic-roadmap li::before { content: ""; width: 7px; height: 7px; position: absolute; left: -4px; top: 4px; background: #0788c2; border-radius: 50%; }
+.diagnostic-roadmap li:last-child { padding-bottom: 0; border-left-color: transparent; }
+.diagnostic-roadmap span { display: inline-block; min-width: 76px; color: var(--ink-soft); font-size: .73rem; }
+.diagnostic-preview figcaption { color: #b9cde1; font-size: .75rem; line-height: 1.5; text-align: center; margin: 14px 8px 0; }
+
+/* El menú se recoge antes de que sus enlaces dejen de caber. */
+@media (max-width: 1100px) {
+  .home-page .nav-toggle { display: flex; min-width: 44px; min-height: 44px; justify-content: center; align-items: center; }
+  .home-page .nav-links { position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: #fff; border-bottom: 1px solid var(--line); max-height: 0; overflow: hidden; visibility: hidden; transition: max-height .35s ease, visibility .35s ease; }
+  .home-page .nav-links.open { max-height: 420px; visibility: visible; }
+  .home-page .nav-links li { border-top: 1px solid var(--line); }
+  .home-page .nav-links a { display: block; padding: 16px 20px; }
+  .home-page .nav-cta { border-radius: 0; }
+}
+@media (max-width: 980px) {
+  .home-page .hero-inner { grid-template-columns: 1fr; gap: 36px; }
+  .home-page .hero-content { max-width: 650px; }
+  .hero-showcase { width: min(520px, 100%); justify-self: center; }
+  .home-page .hero-sub { max-width: 620px; }
+  .home-page .diag-band-box { grid-template-columns: 1fr; }
+  .diagnostic-preview { width: min(480px, 100%); margin-inline: auto; }
+}
+@media (max-width: 600px) {
+  .home-page .hero { padding: 34px 0 44px; }
+  .home-page .hero-title { font-size: clamp(1.85rem, 7.7vw, 2.4rem); }
+  .home-page .hero .eyebrow { font-size: .68rem; letter-spacing: .8px; }
+  .home-page .hero-sub { font-size: 1.03rem; line-height: 1.6; margin: 18px 0 23px; }
+  .home-page .hero-actions { flex-direction: column; gap: 11px; }
+  .home-page .hero-actions .btn { width: 100%; font-size: .88rem; padding: 13px 16px; min-height: 48px; }
+  .home-page .hero-trust { margin-top: 26px; padding-top: 18px; gap: 14px 18px; }
+  .home-page .hero-trust li { padding: 0; border: 0; font-size: .77rem; }
+  .home-page .hero-trust strong { font-size: 1.05rem; }
+  .demo-topline { padding: 15px 18px; }
+  .demo-body { padding: 21px 18px 12px; }
+  .demo-message { max-width: 95%; padding: 13px 15px; }
+  .demo-detail { margin-left: 12px; padding: 12px 15px; min-height: 174px; }
+  .demo-footer { padding: 14px 18px; }
+  .home-page .diag-band-box { padding: 28px 20px; }
+  .home-page .diag-band-text .btn { width: 100%; font-size: .88rem; padding-inline: 14px; }
+  .home-page .diag-band-list li { font-size: .9rem; }
+  .diagnostic-sheet { padding: 21px 18px; }
+  .diagnostic-roadmap span { display: block; margin-bottom: 2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .home-page .marquee-track, .home-page .wa-float, .demo-detail.is-entering { animation: none; }
+  .home-page .reveal { opacity: 1; transform: none; transition: none; }
+  .demo-steps button, .home-page .nav-links { transition: none; }
+}
