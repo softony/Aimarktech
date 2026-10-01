@@ -64,4 +64,3 @@ r.steps[1].click();
 assert.equal(r.ids.demoStepTitle.textContent,'La información, a la mano');
 assert.equal(r.timers.size,0);
 console.log('OK: secuencia completa, pausa, selección manual, fin sin bucle, fuera de pantalla y movimiento reducido.');
-
