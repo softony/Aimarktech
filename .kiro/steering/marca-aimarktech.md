@@ -46,6 +46,10 @@ Cualquier texto nuevo debe ser coherente con este documento.
 - WhatsApp: +52 55 2931 7837 · Correo público: contacto@soyaimarktech.com · Sitio: https://soyaimarktech.com
 
 ## Notas de contenido / SEO
+- **Diseño del inicio:** conservar la introducción animada de entrada. Es una preferencia explícita del propietario; las mejoras del encabezado deben mantenerla.
+- **Ejemplos de la portada:** representar marketing, soporte técnico, procesos y crecimiento con situaciones del dueño del negocio, acciones y valor. Evitar que un ejemplo de bot o citas haga parecer que la oferta se limita a consultorios.
+- **Diagnóstico express:** presentar como primer paso gratuito, con unos 2 minutos estimados para responder (referencia del propietario), evaluación de 6 áreas y plan orientativo. Las muestras de la portada son ilustrativas; no sustituyen el diagnóstico completo.
+- **Franja de valor:** mantener el desplazamiento lento y legible, con estética tecnológica y controles para pausar el movimiento.
 - Casos de éxito: solo con **consentimiento del cliente** o **anonimizados**. Nunca inventar cifras ni testimonios.
 - Dominio oficial: `soyaimarktech.com` (no usar `soyaimarktech.netlify.app`).
 
