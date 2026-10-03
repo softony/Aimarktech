@@ -27,10 +27,10 @@
   <link rel="icon" type="image/png" href="assets/logo.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css?v=20260916-1" />
   <link rel="stylesheet" href="assets/tools.css" />
-  <link rel="stylesheet" href="assets/home.css?v=20261003-1" />
+  <link rel="stylesheet" href="assets/home.css?v=20261003-2" />
 
   <script>
     (function () {
@@ -164,7 +164,7 @@
         <div class="hero-content">
           <p class="eyebrow">Para comercios y pequeños negocios de servicios</p>
           <h1 class="hero-title">Consigue más clientes <span class="grad-text">sin tener que hacerlo todo tú.</span></h1>
-          <p class="hero-sub">¿Se te va el día entre atender, publicar y responder mensajes? Te ayudamos a promocionar tu negocio, dar seguimiento a quienes te escriben y simplificar las tareas de cada día. Implementamos herramientas e inteligencia artificial contigo, paso a paso y según tu presupuesto.</p>
+          <p class="hero-sub">¿Te faltan clientes, la tecnología te frena o todo depende de ti? Conectamos marketing, soporte técnico y procesos para que puedas atender mejor y preparar tu negocio para crecer. Implementamos contigo, paso a paso y según tu presupuesto.</p>
           <div class="hero-actions">
             <a href="herramientas#diagnostico" class="btn btn-primary">Evaluar mi negocio gratis</a>
             <a id="waHero" href="#" class="btn btn-whatsapp" target="_blank" rel="noopener">Hablar por WhatsApp</a>
@@ -176,92 +176,98 @@
           </ul>
         </div>
         <div class="hero-showcase">
-          <section class="followup-demo" id="followupDemo" aria-labelledby="demoTitle">
-            <div class="demo-topline"><span class="demo-kicker">Del mensaje a la acción</span><span class="demo-example">Ejemplo ilustrativo</span></div>
-            <div class="demo-body">
-              <h2 id="demoTitle">Cada consulta,<br>un siguiente paso.</h2>
-              <div class="demo-conversation" id="demoConversation" aria-label="Ejemplo de conversación para solicitar una cita">
-                <div class="demo-message demo-message-previous" id="demoPreviousMessage" data-speaker="client">
-                  <span class="demo-label" id="demoPreviousSpeaker">Cliente</span>
-                  <p id="demoPreviousText">Hola, ¿tienen una cita para mañana por la tarde?</p>
-                </div>
-                <div class="demo-message" id="demoMessage" data-speaker="agent" aria-live="polite" aria-atomic="true">
-                  <span class="demo-label" id="demoSpeaker">Tu agente de IA</span>
-                  <p id="demoMessageText">¡Hola! Tenemos 4:00 o 6:00 p. m. ¿Qué horario prefieres?</p>
-                </div>
-              </div>
-              <div class="demo-choice-area">
-                <div id="demoChoices" hidden>
-                  <p class="demo-choice-hint">Pruébalo: elige como si fueras el cliente.</p>
-                  <div class="demo-choice-buttons" role="group" aria-label="Elegir un horario de ejemplo">
-                    <button type="button" data-demo-slot="4:00 p. m." aria-controls="demoConversation demoDetail">4:00 p. m.</button>
-                    <button type="button" data-demo-slot="6:00 p. m." aria-controls="demoConversation demoDetail">6:00 p. m.</button>
-                  </div>
-                </div>
-                <p class="demo-choice-hint" id="demoProgress" hidden>Paso 2 de 4 · El agente responde</p>
-              </div>
-              <div class="demo-detail" id="demoDetail">
-                <span class="demo-status" id="demoStatus">Atención inicial</span>
-                <h3 id="demoStepTitle">Tu agente responde</h3>
-                <p id="demoStepText">Ofrece los horarios que definiste y ayuda al cliente a elegir.</p>
-              </div>
-              <div class="demo-steps" role="group" aria-label="Etapas del ejemplo" hidden>
-                <button type="button" data-demo-step="0" aria-controls="demoConversation demoDetail" aria-pressed="false"><span>01</span>Pregunta</button>
-                <button type="button" data-demo-step="1" aria-controls="demoConversation demoDetail" aria-pressed="true"><span>02</span>Respuesta</button>
-                <button type="button" data-demo-step="2" aria-controls="demoConversation demoDetail" aria-pressed="false"><span>03</span>Elección</button>
-                <button type="button" data-demo-step="3" aria-controls="demoConversation demoDetail" aria-pressed="false"><span>04</span>Seguimiento</button>
-              </div>
+          <section class="business-stories" id="businessStories" aria-labelledby="storiesTitle">
+            <div class="stories-topline"><span class="signal-dot" aria-hidden="true"></span><h2 id="storiesTitle">Tu negocio puede avanzar.</h2><span class="stories-coordinate" aria-hidden="true">AMK / 01</span></div>
+            <div class="story-slides" id="storySlides" aria-live="polite" aria-atomic="true">
+              <article class="story-slide is-active" id="business-story-0" data-story-panel aria-hidden="false" aria-label="1 de 4: Marketing estratégico">
+                <div class="story-service"><span class="story-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 14-5v14L3 14z"/><path d="m6 15 2 6h3l-2-5M21 9v6"/></svg></span><span>Marketing estratégico</span><span class="story-number">01<span> / 04</span></span></div>
+                <p class="story-label">Lo que te frena</p>
+                <h3>Publico y pago anuncios. Pero llegan pocas consultas.</h3>
+                <div class="story-action"><span class="story-node" aria-hidden="true">↳</span><div><p class="story-label">Así te ayudamos</p><p>Afinamos tu mensaje, tus campañas y el seguimiento de quienes se interesan.</p></div></div>
+                <div class="story-value"><span class="story-value-icon" aria-hidden="true">↗</span><div><p class="story-label">El valor para ti</p><h4>Promoción con dirección.</h4><p>Saber a quién llegar, qué decir y qué acciones vale la pena mantener.</p></div></div>
+              </article>
+              <article class="story-slide" id="business-story-1" data-story-panel aria-hidden="true" aria-label="2 de 4: Soporte técnico">
+                <div class="story-service"><span class="story-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 16v5m-5-11 3 3 5-6"/></svg></span><span>Soporte técnico</span><span class="story-number">02<span> / 04</span></span></div>
+                <p class="story-label">Lo que te frena</p>
+                <h3>Cuando falla la tecnología, mi negocio se detiene.</h3>
+                <div class="story-action"><span class="story-node" aria-hidden="true">↳</span><div><p class="story-label">Así te ayudamos</p><p>Revisamos tus equipos y herramientas, resolvemos fallas y prevenimos problemas recurrentes.</p></div></div>
+                <div class="story-value"><span class="story-value-icon" aria-hidden="true">↗</span><div><p class="story-label">El valor para ti</p><h4>Volver a trabajar con tranquilidad.</h4><p>Tener apoyo para resolver lo técnico y concentrarte en atender tu negocio.</p></div></div>
+              </article>
+              <article class="story-slide" id="business-story-2" data-story-panel aria-hidden="true" aria-label="3 de 4: Procesos + automatización">
+                <div class="story-service"><span class="story-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M15 3h6v6M3 15v6h6M9 6h3v12h3"/></svg></span><span>Procesos + automatización</span><span class="story-number">03<span> / 04</span></span></div>
+                <p class="story-label">Lo que te frena</p>
+                <h3>Si no lo hago yo, se queda pendiente.</h3>
+                <div class="story-action"><span class="story-node" aria-hidden="true">↳</span><div><p class="story-label">Así te ayudamos</p><p>Definimos pasos y responsables. Simplificamos tareas repetitivas con herramientas e IA cuando aporta valor.</p></div></div>
+                <div class="story-value"><span class="story-value-icon" aria-hidden="true">↗</span><div><p class="story-label">El valor para ti</p><h4>Dejar de cargar con todo.</h4><p>Que tu equipo sepa qué hacer y el trabajo dependa menos de tu memoria.</p></div></div>
+              </article>
+              <article class="story-slide" id="business-story-3" data-story-panel aria-hidden="true" aria-label="4 de 4: Escalamiento empresarial">
+                <div class="story-service"><span class="story-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V11h5v10M10 21V7h5v14M17 21V3h5v18M2 21h21"/></svg></span><span>Escalamiento empresarial</span><span class="story-number">04<span> / 04</span></span></div>
+                <p class="story-label">Lo que te frena</p>
+                <h3>Quiero crecer, pero el desorden ya me está rebasando.</h3>
+                <div class="story-action"><span class="story-node" aria-hidden="true">↳</span><div><p class="story-label">Así te ayudamos</p><p>Detectamos qué te limita y ordenamos procesos, tecnología e indicadores antes de dar el siguiente paso.</p></div></div>
+                <div class="story-value"><span class="story-value-icon" aria-hidden="true">↗</span><div><p class="story-label">El valor para ti</p><h4>Crecer sobre una base más sólida.</h4><p>Tener prioridades claras y una operación preparada para atender más trabajo.</p></div></div>
+              </article>
             </div>
-            <div class="demo-footer"><p>Simulación de un negocio con citas.</p><button type="button" class="demo-play" id="demoPlay" aria-controls="demoConversation demoDetail" hidden><span class="demo-play-symbol" aria-hidden="true">▶</span><span id="demoPlayLabel">Ver conversación</span></button></div>
+            <div class="story-tabs" role="group" aria-label="Elige lo que hoy te preocupa" hidden>
+              <button type="button" class="story-tab" data-story-index="0" aria-controls="business-story-0" aria-pressed="true"><span>01</span>Vender</button>
+              <button type="button" class="story-tab" data-story-index="1" aria-controls="business-story-1" aria-pressed="false"><span>02</span>Soporte</button>
+              <button type="button" class="story-tab" data-story-index="2" aria-controls="business-story-2" aria-pressed="false"><span>03</span>Delegar</button>
+              <button type="button" class="story-tab" data-story-index="3" aria-controls="business-story-3" aria-pressed="false"><span>04</span>Crecer</button>
+            </div>
+            <div class="stories-footer"><a href="#diagnostico-cta">Encontrar mi prioridad <span aria-hidden="true">↗</span></a><button type="button" id="storyPlay" aria-controls="storySlides" hidden><span id="storyPlayIcon" aria-hidden="true">▶</span><span id="storyPlayLabel">Ver presentación</span></button></div>
           </section>
-          <p class="demo-caption">Configuramos el proceso y las herramientas según tu negocio.</p>
+          <p class="demo-caption">Un punto de partida distinto para cada negocio. Lo definimos contigo.</p>
         </div>
       </div>
     </section>
 
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <span>Una prioridad clara para empezar</span>
-        <span>IA para simplificar tareas</span>
-        <span>Seguimiento para tus clientes</span>
-        <span>Acompañamiento y costos claros</span>
-        <span>Una prioridad clara para empezar</span>
-        <span>IA para simplificar tareas</span>
-        <span>Seguimiento para tus clientes</span>
-        <span>Acompañamiento y costos claros</span>
+    <section class="marquee value-marquee" id="valueMarquee" aria-label="Lo que conectamos para tu negocio">
+      <div class="value-signature" aria-hidden="true"><span class="signal-dot"></span><span>VISIÓN DE NEGOCIO<br><strong>+ TECNOLOGÍA</strong></span></div>
+      <div class="value-window">
+        <div class="marquee-track">
+          <div class="value-group">
+            <span class="value-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 14-5v14L3 14z"/><path d="m6 15 2 6h3l-2-5M21 9v6"/></svg><span>Marketing con dirección</span><i aria-hidden="true">+</i></span>
+            <span class="value-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 16v5m-5-11 3 3 5-6"/></svg><span>Tecnología que te respalda</span><i aria-hidden="true">+</i></span>
+            <span class="value-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M15 3h6v6M3 15v6h6M9 6h3v12h3"/></svg><span>Procesos para delegar</span><i aria-hidden="true">+</i></span>
+            <span class="value-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V11h5v10M10 21V7h5v14M17 21V3h5v18M2 21h21"/></svg><span>Crecer con una base sólida</span><i aria-hidden="true">+</i></span>
+          </div>
+          <div class="value-group" aria-hidden="true">
+            <span class="value-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 14-5v14L3 14z"/><path d="m6 15 2 6h3l-2-5M21 9v6"/></svg><span>Marketing con dirección</span><i aria-hidden="true">+</i></span>
+            <span class="value-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8M12 16v5m-5-11 3 3 5-6"/></svg><span>Tecnología que te respalda</span><i aria-hidden="true">+</i></span>
+            <span class="value-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M15 3h6v6M3 15v6h6M9 6h3v12h3"/></svg><span>Procesos para delegar</span><i aria-hidden="true">+</i></span>
+            <span class="value-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21V11h5v10M10 21V7h5v14M17 21V3h5v18M2 21h21"/></svg><span>Crecer con una base sólida</span><i aria-hidden="true">+</i></span>
+          </div>
+        </div>
       </div>
-    </div>
+      <button type="button" class="value-pause" id="valuePause" aria-label="Pausar franja de valor" aria-pressed="false" hidden><span aria-hidden="true">Ⅱ</span></button>
+    </section>
 
     <section class="section diag-band" id="diagnostico-cta">
       <div class="container">
         <div class="diag-band-box">
           <div class="diag-band-text">
-            <p class="eyebrow">Punto de partida gratuito</p>
-            <h2>Descubre qué puedes mejorar primero en tu negocio.</h2>
-            <ul class="diag-band-list">
-              <li>Evaluación de 6 áreas de tu negocio</li>
-              <li>Posibles obstáculos según tus respuestas</li>
-              <li>Plan orientativo para los próximos 30 días</li>
-              <li>Resultado descargable al completar la evaluación</li>
-            </ul>
-            <a href="herramientas#diagnostico" class="btn btn-primary btn-lg">Evaluar mi negocio gratis</a>
+            <p class="eyebrow">Diagnóstico express · gratuito</p>
+            <h2>De “no sé por dónde empezar” a un primer paso claro.</h2>
+            <p class="diagnostic-lead">Dedica unos <strong>2 minutos</strong> a mirar tu negocio con perspectiva. Identifica posibles obstáculos y recibe una guía para decidir qué atender primero.</p>
+            <div class="express-facts"><span><strong>~2 min</strong> para responder</span><span><strong>6 áreas</strong> de tu negocio</span><span><strong>30 días</strong> de plan orientativo</span></div>
+            <div class="diagnostic-areas" aria-label="Áreas que evalúa el diagnóstico"><span>Mentalidad</span><span>Procesos</span><span>Marca</span><span>Marketing</span><span>Tecnología</span><span>IA</span></div>
+            <a href="herramientas#diagnostico" class="btn btn-primary btn-lg">Encontrar mi primer paso <span aria-hidden="true">↗</span></a>
+            <p class="diagnostic-note">Sin costo. Al finalizar te pediremos correo o WhatsApp para entregarte el diagnóstico, también descargable en PDF.</p>
           </div>
-          <figure class="diagnostic-preview">
-            <div class="diagnostic-sheet">
-              <div class="diagnostic-sheet-head"><span>Aimarktech / Diagnóstico</span><span class="diagnostic-example">Ejemplo</span></div>
-              <h3>Tu próximo paso,<br>más claro.</h3>
-              <div class="diagnostic-insight"><span class="diagnostic-label">Área de oportunidad</span><p>Seguimiento de consultas</p></div>
-              <div class="diagnostic-action"><span class="diagnostic-label">Acción sugerida</span><p>Reunir contactos, pendientes y responsables en un solo registro.</p></div>
-              <p class="diagnostic-label diagnostic-plan-title">Plan orientativo · 30 días</p>
-              <ol class="diagnostic-roadmap">
-                <li><span>Semana 1</span>Documentar y priorizar</li>
-                <li><span>Semana 2</span>Simplificar una tarea</li>
-                <li><span>Semana 3</span>Ordenar el seguimiento</li>
-                <li><span>Semana 4</span>Medir y ajustar</li>
-              </ol>
+          <section class="diagnostic-preview" aria-labelledby="expressTitle">
+            <div class="express-preview">
+              <div class="express-head"><span class="express-logo" aria-hidden="true">A<span>↗</span></span><div><p>Así empieza la claridad.</p><span>Prueba una pregunta del diagnóstico</span></div><span class="express-sample">Muestra</span></div>
+              <div class="express-question"><span class="express-step">01 / Tu situación</span><h3 id="expressTitle">¿Qué tanto depende el negocio de ti?</h3>
+                <div class="express-options" role="group" aria-label="Elige una respuesta de ejemplo" hidden>
+                  <button type="button" data-express-index="0" aria-controls="expressResult" aria-pressed="true"><span class="express-radio" aria-hidden="true"></span>Todo depende de mí<span class="express-option-arrow" aria-hidden="true">↗</span></button>
+                  <button type="button" data-express-index="1" aria-controls="expressResult" aria-pressed="false"><span class="express-radio" aria-hidden="true"></span>Delego, pero superviso todo<span class="express-option-arrow" aria-hidden="true">↗</span></button>
+                  <button type="button" data-express-index="2" aria-controls="expressResult" aria-pressed="false"><span class="express-radio" aria-hidden="true"></span>Mi equipo opera sin mí<span class="express-option-arrow" aria-hidden="true">↗</span></button>
+                </div>
+              </div>
+              <div class="express-result" id="expressResult" aria-live="polite" aria-atomic="true"><span class="express-step">02 / Una posible orientación</span><h4 id="expressResultTitle">Empieza por delegar una tarea.</h4><p id="expressResultText">Elige una actividad repetitiva, escribe sus pasos y acuerda quién se hará cargo.</p><div class="express-route" aria-hidden="true"><span>Priorizar</span><i>→</i><span>Actuar</span><i>→</i><span>Revisar</span></div></div>
+              <p class="express-disclaimer">Ejemplo ilustrativo. Tu diagnóstico completo considera las respuestas de las 6 áreas.</p>
             </div>
-            <figcaption>Vista resumida e ilustrativa. Tu resultado dependerá de tus respuestas.</figcaption>
-          </figure>
+          </section>
         </div>
       </div>
     </section>
@@ -537,6 +543,6 @@
   <script src="script.js?v=20260916-1"></script>
   <script src="assets/visits.js"></script>
   <script src="assets/intro.js"></script>
-  <script src="assets/home.js?v=20261003-1"></script>
+  <script src="assets/home.js?v=20261003-2"></script>
 </body>
 </html>

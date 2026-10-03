@@ -1,140 +1,95 @@
-/* Conversación ilustrativa: no envía mensajes, reserva citas ni guarda datos. */
+/* Muestras ilustrativas de la portada. No envían ni almacenan respuestas. */
 (() => {
   "use strict";
-  const demo = document.getElementById("followupDemo");
-  if (!demo) return;
+  const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const stories = document.getElementById("businessStories");
+  if (!stories) return;
+  const slides = [...stories.querySelectorAll("[data-story-panel]")];
+  const tabs = [...stories.querySelectorAll("[data-story-index]")];
+  const live = document.getElementById("storySlides");
+  const play = document.getElementById("storyPlay");
+  const playLabel = document.getElementById("storyPlayLabel");
+  const playIcon = document.getElementById("storyPlayIcon");
+  let current = 0, timer = null, playing = false, resumable = false;
 
-  const detail = document.getElementById("demoDetail");
-  const title = document.getElementById("demoStepTitle");
-  const text = document.getElementById("demoStepText");
-  const status = document.getElementById("demoStatus");
-  const message = document.getElementById("demoMessage");
-  const speaker = document.getElementById("demoSpeaker");
-  const messageText = document.getElementById("demoMessageText");
-  const previousMessage = document.getElementById("demoPreviousMessage");
-  const previousSpeaker = document.getElementById("demoPreviousSpeaker");
-  const previousText = document.getElementById("demoPreviousText");
-  const choices = document.getElementById("demoChoices");
-  const progress = document.getElementById("demoProgress");
-  const play = document.getElementById("demoPlay");
-  const playLabel = document.getElementById("demoPlayLabel");
-  const playSymbol = play.querySelector(".demo-play-symbol");
-  const steps = [...demo.querySelectorAll("[data-demo-step]")];
-  const slots = [...demo.querySelectorAll("[data-demo-slot]")];
-  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const speakers = { client: "Cliente", agent: "Tu agente de IA" };
-  const stepDuration = 4500;
-  let selectedSlot = "4:00 p. m.";
-  let current = 1;
-  let timer = null;
-  let playing = false;
-  let canResume = false;
-
-  function conversation() {
-    return [
-      { speaker: "client", message: "Hola, ¿tienen una cita para mañana por la tarde?", title: "El cliente pregunta", text: "Una persona consulta disponibilidad. Su mensaje inicia la atención en el canal de tu negocio.", status: "Nueva consulta" },
-      { speaker: "agent", message: "¡Hola! Tenemos 4:00 o 6:00 p. m. ¿Qué horario prefieres?", title: "Tu agente responde", text: "Ofrece los horarios que definiste y ayuda al cliente a elegir.", status: "Atención inicial" },
-      { speaker: "client", message: `A las ${selectedSlot}, por favor.`, title: "El cliente elige", text: `La conversación identifica su preferencia: mañana a las ${selectedSlot}`, status: "Preferencia identificada" },
-      { speaker: "agent", message: `Listo, registré tu solicitud para mañana a las ${selectedSlot} Nuestro equipo te confirmará la cita.`, title: "Tu equipo da seguimiento", text: `Recepción recibe el horario elegido: ${selectedSlot} Su siguiente tarea es confirmar la cita.`, status: "Seguimiento organizado" },
-    ];
+  function controls() {
+    playLabel.textContent = playing ? "Pausar" : resumable ? "Continuar" : current === slides.length - 1 ? "Repetir" : "Ver presentación";
+    playIcon.textContent = playing ? "Ⅱ" : "▶";
+    stories.classList.toggle("is-playing", playing);
+    // La reproducción no interrumpe repetidamente a quien usa lector de pantalla.
+    live.setAttribute("aria-live", playing ? "off" : "polite");
   }
-
-  function updatePlayLabel() {
-    playLabel.textContent = playing ? "Pausar" : canResume ? "Continuar" : current === 3 ? "Repetir" : "Ver conversación";
-    playSymbol.textContent = playing ? "Ⅱ" : "▶";
-  }
-
-  function render(index, animate = true) {
+  function render(index) {
     current = index;
-    const states = conversation();
-    const state = states[index];
-    speaker.textContent = speakers[state.speaker];
-    messageText.textContent = state.message;
-    message.setAttribute("data-speaker", state.speaker);
-    previousMessage.hidden = index === 0;
-    if (index > 0) {
-      const previous = states[index - 1];
-      previousSpeaker.textContent = speakers[previous.speaker];
-      previousText.textContent = previous.message;
-      previousMessage.setAttribute("data-speaker", previous.speaker);
-    }
-    title.textContent = state.title;
-    text.textContent = state.text;
-    status.textContent = state.status;
-    choices.hidden = index !== 1;
-    progress.hidden = index === 1;
-    progress.textContent = `Paso ${index + 1} de 4 · ${state.title}`;
-    steps.forEach((button, i) => button.setAttribute("aria-pressed", String(i === index)));
-    [message, detail].forEach(element => {
-      element.classList.remove("is-entering");
-      if (animate && !reducedMotion.matches) {
-        void element.offsetWidth;
-        element.classList.add("is-entering");
-      }
+    slides.forEach((slide, i) => {
+      slide.classList.toggle("is-active", i === index);
+      slide.classList.remove("is-entering");
+      slide.setAttribute("aria-hidden", String(i !== index));
     });
-    updatePlayLabel();
+    if (!motion.matches) {
+      void slides[index].offsetWidth;
+      slides[index].classList.add("is-entering");
+    }
+    tabs.forEach((tab, i) => tab.setAttribute("aria-pressed", String(i === index)));
+    controls();
   }
-
-  function stop(allowResume = true) {
+  function stop(resume = true) {
     clearTimeout(timer);
     timer = null;
-    if (playing) canResume = allowResume && current < 3;
-    else if (!allowResume) canResume = false;
+    if (playing) resumable = resume && current < slides.length - 1;
+    else if (!resume) resumable = false;
     playing = false;
-    updatePlayLabel();
+    controls();
   }
-
   function advance() {
     render(current + 1);
-    if (current < 3) timer = setTimeout(advance, stepDuration);
+    if (current < slides.length - 1) timer = setTimeout(advance, 12000);
     else stop(false);
   }
-
-  function start() {
-    playing = true;
-    canResume = false;
-    updatePlayLabel();
-    timer = setTimeout(advance, stepDuration);
-  }
-
-  steps.forEach((button, index) => button.addEventListener("click", () => {
-    stop(false);
-    render(index);
-  }));
-
-  slots.forEach(button => button.addEventListener("click", () => {
-    const slot = button.getAttribute("data-demo-slot");
-    if (!["4:00 p. m.", "6:00 p. m."].includes(slot)) return;
-    selectedSlot = slot;
-    stop(false);
-    render(2);
-    // La opción se oculta al avanzar; mantener el foco en un control visible.
-    steps[2].focus({ preventScroll: true });
-    if (!reducedMotion.matches) start();
-  }));
-
+  tabs.forEach((tab, index) => tab.addEventListener("click", () => { stop(false); render(index); }));
   play.addEventListener("click", () => {
     if (playing) { stop(); return; }
-    if (!canResume) render(0);
-    start();
+    if (current === slides.length - 1) render(0);
+    playing = true;
+    resumable = false;
+    controls();
+    timer = setTimeout(advance, 12000);
   });
-
-  function updateMotionPreference() {
-    stop();
-    play.hidden = reducedMotion.matches;
-    message.classList.remove("is-entering");
-    detail.classList.remove("is-entering");
-  }
-  reducedMotion.addEventListener("change", updateMotionPreference);
   document.addEventListener("visibilitychange", () => { if (document.hidden) stop(); });
   if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver(entries => {
-      if (!entries[0].isIntersecting) stop();
-    });
-    observer.observe(demo);
+    new IntersectionObserver(entries => { if (!entries[0].isIntersecting) stop(); }).observe(stories);
   }
+  stories.querySelector(".story-tabs").hidden = false;
 
-  demo.querySelector(".demo-steps").hidden = false;
-  render(1, false);
-  updateMotionPreference();
+  const responses = [
+    ["Empieza por delegar una tarea.", "Elige una actividad repetitiva, escribe sus pasos y acuerda quién se hará cargo."],
+    ["Delega con criterios claros.", "Define qué puede decidir tu equipo y acuerda una revisión. No todo tiene que pasar por ti."],
+    ["Revisa qué necesitas para crecer.", "Identifica la capacidad de tu equipo y el proceso que se saturaría si llegaran más clientes."],
+  ];
+  const express = [...document.querySelectorAll("[data-express-index]")];
+  express.forEach((button, index) => button.addEventListener("click", () => {
+    express.forEach((option, i) => option.setAttribute("aria-pressed", String(i === index)));
+    document.getElementById("expressResultTitle").textContent = responses[index][0];
+    document.getElementById("expressResultText").textContent = responses[index][1];
+  }));
+  document.querySelector(".express-options").hidden = false;
+
+  const ribbon = document.getElementById("valueMarquee");
+  const pauseRibbon = document.getElementById("valuePause");
+  let ribbonPaused = false;
+  pauseRibbon.addEventListener("click", () => {
+    ribbonPaused = !ribbonPaused;
+    ribbon.setAttribute("data-paused", String(ribbonPaused));
+    pauseRibbon.setAttribute("aria-pressed", String(ribbonPaused));
+    pauseRibbon.setAttribute("aria-label", ribbonPaused ? "Reanudar franja de valor" : "Pausar franja de valor");
+    pauseRibbon.querySelector("span").textContent = ribbonPaused ? "▶" : "Ⅱ";
+  });
+  function motionPreference() {
+    stop();
+    play.hidden = motion.matches;
+    pauseRibbon.hidden = motion.matches;
+    slides.forEach(slide => slide.classList.remove("is-entering"));
+  }
+  motion.addEventListener("change", motionPreference);
+  motionPreference();
 })();
